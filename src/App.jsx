@@ -1,9 +1,8 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { meta, projects, etcetera } from './data.js'
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
+import { meta, projects, about } from './data.js'
 import Illustration from './Illustration.jsx'
-
-const OwlCanvas = lazy(() => import('./OwlCanvas.jsx'))
+import OwlHero from './OwlHero.jsx'
 
 const byId = Object.fromEntries(projects.map((p) => [p.id, p]))
 const swatch = { wallpapp: 'var(--color-blue)', dairymind: 'var(--color-mustard)', luminaft: 'var(--color-red)' }
@@ -55,7 +54,7 @@ function Detail({ p, onClose }) {
           <div className="plate-art"><Illustration id={p.id} /></div>
           <div className="plate-scrim" />
           <div className="platemark">
-            {p.name.replace('.', '')}<span className="dot">.</span>
+            {p.name.replace('.', '')}
           </div>
           <span className="plate-fig">fig. {p.no.replace('No. ', '')}</span>
         </div>
@@ -93,15 +92,115 @@ function Detail({ p, onClose }) {
   )
 }
 
+// Page 2 — the "about" spread revealed by folding the cover down.
+function AboutPage({ onBack }) {
+  return (
+    <div className="sheet">
+      <div className="paper about">
+        <span className="crop tl" /><span className="crop tr" /><span className="crop bl" /><span className="crop br" />
+        <img className="about-engraving" src={`${import.meta.env.BASE_URL}plates/quill.webp`} alt="" aria-hidden="true" />
+
+        <div className="masthead">
+          <span className="brand">{meta.name}<span className="dot">.</span></span>
+          <span className="mid">{about.kicker} · {meta.issue}</span>
+          <nav>
+            <button className="pageflip" onClick={onBack}>⌃ Cover</button>
+          </nav>
+        </div>
+
+        <div className="about-body">
+          <div className="about-main">
+            <div className="kick">{about.kicker}</div>
+            <h1 className="about-h">{about.heading}</h1>
+            <p className="about-lead">{about.lead}</p>
+            {about.body.map((t) => <p className="about-p" key={t}>{t}</p>)}
+          </div>
+          <aside className="about-side">
+            <div className="folio"><span>Page 02</span><span>Find me</span></div>
+            <ul className="about-links">
+              <li><a href={meta.linkedin} target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a></li>
+              <li><a href={meta.github} target="_blank" rel="noreferrer">GitHub <span>↗</span></a></li>
+              <li><a href={`mailto:${meta.email}`}>Email <span>↗</span></a></li>
+            </ul>
+            <p className="about-note">{about.note}</p>
+          </aside>
+        </div>
+
+        <div className="footstrip">
+          <span className="cta">Have something worth building? <a href={`mailto:${meta.email}`}>Write to me.</a></span>
+          <span className="social">
+            <button className="pageflip" onClick={onBack}>Back to the cover ⌃</button>
+            <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [active, setActive] = useState(null)
   useEffect(() => {
     window.__openProject = (id) => setActive(id)
   }, [])
 
+  // ── page fold: the cover turns around its spine to reveal the about page ──
+  // fold 0 = cover, 1 = folded away (about shown). Scrubbed by wheel, or driven by the buttons.
+  const bookRef = useRef(null)
+  const fold = useMotionValue(0)
+  // The cover zooms out + fades away while the about page slides up from the bottom (over it),
+  // casting a drop shadow from its leading (top) edge as it rises.
+  const coverScale = useTransform(fold, [0, 1], [1, 0.58]) // dramatic zoom-out
+  const coverOpacity = useTransform(fold, [0, 0.85], [1, 0])
+  const aboutY = useTransform(fold, [0, 1], ['100%', '0%'])
+  const aboutShadow = useTransform(
+    fold, [0, 0.08],
+    ['0px -14px 40px -14px rgba(12,9,6,0)', '0px -14px 40px -14px rgba(12,9,6,0.42)']
+  )
+  const [folded, setFolded] = useState(false)
+  const animRef = useRef(null)
+  const snapRef = useRef(null)
+
+  useEffect(() => fold.on('change', (v) => setFolded(v > 0.5)), [fold])
+
+  const settle = () => {
+    clearTimeout(snapRef.current)
+    snapRef.current = setTimeout(() => {
+      animRef.current?.stop()
+      animRef.current = animate(fold, fold.get() > 0.35 ? 1 : 0, { type: 'spring', stiffness: 90, damping: 20 })
+    }, 120)
+  }
+  const foldTo = (v) => { animRef.current?.stop(); animRef.current = animate(fold, v, { type: 'spring', stiffness: 78, damping: 19 }) }
+
+  useEffect(() => {
+    const el = bookRef.current
+    if (!el) return
+    const onWheel = (e) => {
+      if (window.innerWidth <= 920 || active) return // mobile scrolls; don't fold behind a detail
+      e.preventDefault()
+      animRef.current?.stop()
+      fold.set(Math.min(1, Math.max(0, fold.get() + e.deltaY * 0.0013)))
+      settle()
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [fold, active])
+
   return (
     <div className="grain">
-      <div className="sheet">
+      <div ref={bookRef} className={`book ${folded ? 'folded' : ''}`}>
+
+        {/* PAGE 2 — slides up from the bottom, OVER the cover, with a top-edge drop shadow */}
+        <motion.div className="leaf leaf-back" aria-hidden={!folded} style={{ y: aboutY, boxShadow: aboutShadow }}>
+          <AboutPage onBack={() => foldTo(0)} />
+        </motion.div>
+
+        {/* PAGE 1 — the cover zooms out + fades away */}
+        <motion.div
+          className="leaf leaf-front"
+          style={{ scale: coverScale, opacity: coverOpacity, pointerEvents: folded ? 'none' : 'auto' }}
+        >
+        <div className="sheet">
         <div className="paper">
           {/* print registration / crop marks */}
           <span className="crop tl" /><span className="crop tr" /><span className="crop bl" /><span className="crop br" />
@@ -113,6 +212,7 @@ export default function App() {
             <nav>
               <a href={`mailto:${meta.email}`}>Email</a>
               <a href={meta.github} target="_blank" rel="noreferrer">GitHub</a>
+              <button className="pageflip" onClick={() => foldTo(1)}>About ⌄</button>
             </nav>
           </motion.div>
 
@@ -125,7 +225,7 @@ export default function App() {
                 <h1>An engineer who builds things that <em>think</em> — and things that <em>delight</em>.</h1>
                 <p className="lead">From air-gapped municipal AI to quant tools, Rust desktop apps and playful web toys. Everything here shipped, runs, or taught me something worth keeping.</p>
               </div>
-              <div className="doodlewrap"><Suspense fallback={null}><OwlCanvas /></Suspense></div>
+              <div className="doodlewrap"><OwlHero /></div>
               <div className="quip">// {meta.quip}<span className="cursor" /></div>
             </motion.div>
 
@@ -134,7 +234,7 @@ export default function App() {
               <div className="bg"><Illustration id="huna" /></div>
               <div className="front">
                 <div className="no">{byId.huna.no} — {byId.huna.kind}</div>
-                <div className="cardname">{byId.huna.name}</div>
+                <div className="cardname">{byId.huna.name.replace('.', '')}</div>
                 <div className="role">{byId.huna.role}</div>
               </div>
               <div className="front">
@@ -149,7 +249,7 @@ export default function App() {
               <div className="bg" style={{ opacity: 0.85 }}><Illustration id="simtrader" /></div>
               <div className="front">
                 <div className="no">{byId.simtrader.no} — {byId.simtrader.kind}</div>
-                <div className="cardname">simtrader<span className="dot">.</span></div>
+                <div className="cardname">simtrader</div>
                 <div className="role">{byId.simtrader.role}</div>
               </div>
               <div className="front">
@@ -163,7 +263,7 @@ export default function App() {
               <div className="bg"><Illustration id="soundscapes" /></div>
               <div className="front">
                 <div className="no">{byId.soundscapes.no}</div>
-                <div className="cardname">{byId.soundscapes.name}</div>
+                <div className="cardname">{byId.soundscapes.name.replace('.', '')}</div>
               </div>
               <div className="front">
                 <div className="blurb">{byId.soundscapes.blurb}</div>
@@ -175,7 +275,7 @@ export default function App() {
             <motion.div className="mod card-more" variants={fadeItem}>
               <div>
                 <div className="no">Also in this issue</div>
-                <div className="cardname" style={{ fontSize: 'clamp(20px,2.2vw,28px)' }}>et cetera.</div>
+                <div className="cardname" style={{ fontSize: 'clamp(20px,2.2vw,28px)' }}>et cetera</div>
               </div>
               <ul>
                 {['wallpapp', 'dairymind', 'luminaft'].map((id) => (
@@ -198,13 +298,14 @@ export default function App() {
           <motion.div className="footstrip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}>
             <span className="cta">Have something worth building? <a href={`mailto:${meta.email}`}>Write to me.</a></span>
             <span className="social">
-              <a href="https://poly.pizza/m/fNkq9CwSG6d" target="_blank" rel="noreferrer" className="credit">Owl · Poly by Google (CC BY)</a>
               <a href={meta.github} target="_blank" rel="noreferrer">GitHub</a>
               <a href={meta.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
               <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
             </span>
           </motion.div>
         </div>
+        </div>
+        </motion.div>
       </div>
 
       <AnimatePresence>

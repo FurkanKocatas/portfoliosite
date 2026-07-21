@@ -25,11 +25,29 @@ card expands it into an animated full-screen "detail spread" (shared-layout morp
 
 It must read like a **printed magazine page**, not a web template.
 
+### Two pages, one viewport each — a scroll-driven SLIDE-UP (2026-07-21)
+The issue has **two pages**: the cover (page 1) and an **about** spread (page 2). Scrolling
+**slides** the cover up and out the top while the about page slides up from below to take its
+place — a way to add content **without** breaking the no-scroll rule (each page is one viewport;
+you slide between them, never scroll a long page). (Earlier tries — a fold-down, a spine
+page-turn, and a zoom-through — were all rejected; don't revive them.)
+Mechanics: `.book` (`overflow: hidden`) holds two `.leaf`s (each 100vh). A `fold` **motion value
+(0→1)** drives two things at once: the **cover** (`.leaf-front`, z-index 1) `scale 1→0.86` +
+`opacity 1→0` — **zooms out and fades away**; and the **about page** (`.leaf-back`, z-index 2 —
+*over* the cover) `y 100% → 0%` — **slides up from the bottom**, with a **top-edge drop shadow**
+(`boxShadow` motion value, faded in from `fold 0.08`) so it reads as a sheet rising over the cover.
+
+`fold` is **scrubbed by the mouse wheel** (a non-passive `wheel` listener on `.book` that
+`preventDefault`s — no real scroll happens; guarded off ≤920px and while a detail is open) and
+**settles** to 0/1 with a spring on idle; the "About ⌄" / "⌃ Cover" buttons call
+`foldTo(1)`/`foldTo(0)`. About content lives in `about` in `data.js`. **If you add a page-3, keep
+the slide-not-scroll rule.** Easy knobs: spring stiffness, wheel `* 0.0013`.
+
 ### Non-negotiables
-- **Everything fits one viewport.** After any layout change, verify:
-  `document.querySelector('.sheet').scrollHeight <= window.innerHeight + 2`, and that no
-  `.mod` card clips its content (`scrollHeight > clientHeight`).
-- **No long scrolling page.** He rejected the endless-scroll version outright.
+- **Everything fits one viewport** — *both* pages. Verify each: `.leaf-front .sheet` and
+  `.leaf-back .sheet` `scrollHeight <= window.innerHeight + 2`, and no `.mod` card clips.
+- **No long scrolling page.** He rejected the endless-scroll version outright. A page *fold/turn*
+  is fine (discrete, one viewport each); a scroll-down section is not.
 - Mobile (<920px) is allowed to stack and scroll — that's the only exception.
 
 ---
@@ -44,8 +62,11 @@ npm run lint     # oxlint
 ```
 
 - React 19 + Vite + **Tailwind v4** (via `@tailwindcss/vite`) + Framer Motion.
-- **React Three Fiber + drei + three** — used *only* for the cover owl (`OwlCanvas.jsx`),
-  lazy-loaded so the main bundle stays ~109 KB gzip.
+- **The cover mascot is now a pure-SVG technical plate** (`OwlPlate.jsx`) — no 3D. Main
+  bundle stays ~110 KB gzip.
+- **React Three Fiber + drei + three** are still in `package.json` but **no longer used by
+  the app** — only the parked `src/ProjectScene.jsx` (dead code) references them. Safe to
+  remove all three deps if `ProjectScene.jsx` is deleted too.
 - `base: './'` in `vite.config.js` so the build works from any folder.
 
 ### Deploy
@@ -61,9 +82,9 @@ Static only — **no Node on the server**. `npm run build`, then upload the **co
 | `src/data.js` | **All content.** meta, `projects[]`, `etcetera[]`. Edit copy here — never hardcode text in components. |
 | `src/App.jsx` | Layout: masthead, grid, cards, footer + the detail overlay. |
 | `src/Illustration.jsx` | Per-project SVG artwork (see §6). Also still exports an unused `Doodle` (old SVG robot owl) — dead code, safe to delete. |
-| `src/OwlCanvas.jsx` | R3F cover mascot (glTF owl, cursor-follow). |
+| `src/OwlHero.jsx` | **Cover mascot** — vintage engraved owl #1 as a technical plate with live cursor-tracking eyes (see §8). |
+| `public/owls/owl-1.webp` | The chosen engraved owl, bg removed, recoloured to one ink, **pupils hollowed** so the hero draws live eyes. Source + scripts in `owl-src/` (not shipped). |
 | `src/index.css` | Design tokens + **all layout CSS** (grid, cards, detail overlay, responsive). |
-| `public/owl.glb` | Owl model, 1.47 MB, CC-BY (see §8). |
 | `src/ProjectScene.jsx` | **Dead code.** Old R3F per-project animated scenes — rejected, not imported, not bundled. Kept in case it's ever revived. |
 
 ### Project data shape (`src/data.js`)
@@ -95,7 +116,9 @@ Static only — **no Node on the server**. `npm run build`, then upload the **co
 - **Cream paper** `#f4efe3` + a print **grain** overlay (`.grain::after`).
 - Type: **Fraunces** (serif, wordmarks/headings) + **Courier Prime** (mono, labels/body).
   Loaded from Google Fonts in `index.html`.
-- Lowercase serif **wordmarks** with a coloured full stop: `synapse.` `simtrader.`
+- Lowercase serif **wordmarks**, no trailing dot (the coloured full stops were tried then
+  **removed** 2026-07-21 for a cleaner look). The three project titles share one size
+  (`clamp(24px,2.8vw,40px)`). The masthead brand `Furkan Kocataş.` keeps its red dot.
 - Magazine furniture: masthead rule, **folio lines** (`No. 01 — Principal work`),
   `fig. 0X` captions, dotted index rows, **crop/registration marks** in the paper corners,
   **barcode** in the footer.
@@ -108,22 +131,46 @@ Static only — **no Node on the server**. `npm run build`, then upload the **co
 
 ## 6. Project artwork — the rule that matters most
 
-Each project's art is a **technical plate / patent-diagram schematic on pastel paper**:
-fine dense engraved linework, a faint grid, concentric rings/axes, radial spokes,
-**labelled callouts with real terms** (`vLLM · 35B`, `qdrant`, `WorkerW`, `R3F · GLSL`),
-crosshairs, corner ticks. Dark tonal ink line colour + one red accent, on that project's
-pastel tone.
+Each project's art is a **vintage engraving on a technical plate**: the engraving on a faint
+grid with corner ticks and a **single `FIG.0X` caption**. The **labelled callouts** (`vLLM · 35B`,
+`qdrant`, `WorkerW`, `GAZE ▸ CURSOR`…), crosshairs, and secondary tags were **removed 2026-07-21**
+for a cleaner look — keep them gone unless asked. Dark ink line + one red accent, on paper.
 
 Implementation: `Frame()` draws the grid + corner ticks, `Callout()` draws a leader line +
 label, then each project component draws its own schematic. Palettes live in the `PAL`
 object at the top of `Illustration.jsx`. Art is drawn on a **transparent** background —
 the pastel comes from the plate/card CSS.
 
-### ⚠️ simtrader is a permanent exception
-`simtrader` **keeps its original artwork**: chunky **red `#c94f38` + black `#1d1b16`
-candlesticks** with a red dashed trend line on clean cream `#fbf9f4`. **No `Frame()`, no
-grid, no axes, no callouts, and no green candles.** He loves this one and rejected every
-attempt to change it. Do not "harmonise" it with the other plates.
+### ⚠️ ALL SIX projects now use vintage ENGRAVINGS, not drawn schematics (2026-07-21)
+Furkan rejected the drawn schematics ("they look so bad") and asked for engraved art like the
+owl. Every `Illustration.jsx` component now places a **public-domain engraving** inside the same
+`Frame()` + `Callout()` furniture (grid, corner ticks, red crosshair, mono tags):
+- **synapse** (`Huna`) → phrenology "mapped mind" head; callouts aim the stack (`vLLM · 35B`,
+  `RAG`, `qdrant`, `openfga`) at brain regions.
+- **soundscapes** → armillary sphere ("spin the world").
+- **simtrader** → a **caduceus** (Mercury's staff — the classical symbol of trade/finance),
+  isolated from a Mercury engraving, with a faint red uptrend line — see the note below; the
+  candlesticks are backed up.
+- **wallpapp** → a magic lantern (Kircher) projecting a living image (= live wallpaper).
+- **dairymind** → a dairy **cow** etching in a pastoral field.
+- **luminaft** → a **comet** (tone-inverted so the bright comet becomes ink).
+
+The **about page** (page 2) also carries a faint colophon engraving — a **hand writing with a
+quill** (`public/plates/quill.webp`, `.about-engraving`, opacity ~0.13, bottom-right, flipped so
+the quill points at the content). Same pipeline (`owl-src/src5/`).
+
+All files: `public/plates/<id>.webp`, single ink `#211d17`, bg removed via luminance→alpha.
+Sources + `process2.py`/`process3.py` (crops, thresholds, masks) live in `owl-src/src2/` &
+`owl-src/src3/` (not shipped). All PD → **no attribution required**.
+
+### ⚠️ simtrader — candlesticks replaced by Mercury, but BACKED UP
+He was on record loving the candlesticks, so before swapping them he asked for a backup. Motif
+went: **bull** (read like dairymind's cow) → full **Mercury** statue (nude — inappropriate for
+his Turkish audience) → the **caduceus alone** (cropped from that Mercury plate). The original
+candlestick component is kept **in code** as
+`SimTraderCandles()` (unused; oxlint warns — that's expected) and also as
+`owl-src/SimTrader-candlesticks-BACKUP.jsx`. **To revert:** point `MAP.simtrader` back at
+`SimTraderCandles`. Don't delete either backup without asking.
 
 ### Rejected art directions (do not go back to these)
 1. **Dark / gradient / glassmorphism "AI template"** — the original v1. Rejected wholesale.
@@ -163,31 +210,49 @@ Source project lives at `../financeapp` (see its `docs/HANDOFF.md`).
 
 ---
 
-## 8. Cover mascot (open item)
+## 8. Cover mascot — engraved owl with live eyes
 
-`src/OwlCanvas.jsx` renders `public/owl.glb` — a low-poly **Great horned owl**.
+`src/OwlHero.jsx` renders the mascot: **vintage engraved owl #1** (Furkan's pick from a
+supplied set of four) wrapped in the technical-plate language — faint grid, corner + edge
+ticks, "cut" (arc/dashed) rings, a red gaze reticle, an accent spot, and monospace tags
+(`FIG.00 · STRIX Nº1`, `HORNED · A`, `PERCH · LEFT`, `Ø 1.00`). The owl is a transparent,
+single-ink WebP; **the eyes are drawn by SVG and track the cursor**.
 
-- **Static mesh: no skeleton, no morph targets, no animations.** So real blinking and
-  eye-only cursor tracking are **impossible** with this file. Currently the *whole owl*
-  turns toward the cursor, plus a gentle idle bob.
-- Auto-framed to its **bounding sphere** (radius normalised to 1, camera distance computed
-  from fov + aspect each frame). This is deliberate: the sphere is rotation-invariant, so
-  the owl can never be clipped as it turns. An earlier fixed-scale version put the owl
-  off-frame ("sadece ayağı görünüyor").
-- Tuning knobs at the top of the file: `BASE_Y` (resting facing direction), `BASE_X`,
-  `MARGIN` (lower = fills more of the frame).
-- **Status: he is not happy with the owl yet** ("baykuş kötü de dursun şu an") — parked, not
-  finished. If he wants real blink + eye tracking, a **rigged/animated** model is required
-  (Sketchfab "Animated" models; downloads there are login-gated).
+### How the live eyes work
+Both eyes are **fully hollowed** in the shipped image (`owl1_body.py`, `RER=41`), and `OwlHero`
+redraws each eye in SVG in the engraving's own idiom so they don't look pasted-on: a hatched
+**radial-spoke iris** (`iris()`), faint concentric rings, an ink rim, and a textured pupil
+(`#211d17`) with catchlights. The iris spokes + pupil are one **rolling eyeball group** (`eyeball()`, one `eyeRefs` per eye)
+that sits on a fixed cream backing (sclera) and is clip-pathed to the socket circle. An rAF
+loop then:
+- **tracks the cursor** — the whole eyeball rolls toward the pointer (so the spokes travel
+  *with* the pupil instead of the pupil sliding over static lines), clamped by `TRAVEL`, with a
+  slow idle drift when the pointer is elsewhere; a thin backing crescent shows on the trailing
+  side as it looks aside;
+- **blinks every ~5s** — a feathered lid (`LID_PATH` + `LASH_PATH` + hatch), clip-pathed to the
+  socket, sweeps down and back over `D` (≈0.6s, occasional double-blink). The rim is drawn on top
+  of the clip so the socket outline always reads.
 
-### Attribution — must stay
-The model is **CC-BY: "Owl · Poly by Google"**, credited in the footer with a link to
-`https://poly.pizza/m/fNkq9CwSG6d`. If you swap the model, update or remove that credit
-accordingly and keep the new model's licence satisfied.
+Respects `prefers-reduced-motion` (bails → static open eyes). Eye centres come from the owl's
+natural pixel coords (`EYES = [map(96,139), map(209,139)]`) mapped into the 440×240 viewBox via
+the fixed image rect `IMG`. If you re-place or swap the image, re-measure those **and** the
+hollow centres/`RER` in `owl1_body.py` together.
 
-Good free sources: [Poly Pizza](https://poly.pizza) (direct `.glb` links, mostly CC-BY/CC0),
-[Quaternius](https://quaternius.com) (CC0, animated packs), Sketchfab (biggest, but
-login-gated downloads).
+### Image pipeline (`owl-src/`, not shipped)
+Supplied as one engraving of four owls (`owl-src/…jpg`). `process.py` crops each, drops the
+cream background via a luminance→alpha ramp (fine lines stay anti-aliased; RGB is set to the
+ink everywhere so **no white halo** appears on any bg), recolours to one ink `#211d17`, trims,
+downscales, writes transparent WebP. `owl1_body.py` then hollows owl #1's pupils. To change the
+owl tint/pupils: edit those scripts, re-run (`cd owl-src && python3 process.py && python3
+owl1_body.py`), copy `owl-1.webp` to `public/owls/`.
+
+### History (why it's not 3D anymore)
+Two earlier mascots were rejected/replaced on 2026-07-21: (1) `OwlCanvas.jsx` — a CC-BY glTF
+owl (`public/owl.glb`, Poly by Google) via React Three Fiber; Furkan disliked it and it didn't
+fit the frame. (2) `OwlPlate.jsx` — a pure-vector patent-diagram owl (interim). Both were
+removed along with `owl.glb`, the three-owl chooser (`OwlSwitcher.jsx`/`OwlVintage.jsx`), the
+unused owls, and the footer model credit. If a 3D owl is ever revived, restore a CC-BY/CC0
+credit in the footer.
 
 ---
 
@@ -197,8 +262,12 @@ login-gated downloads).
 - **New illustration?** Add a component in `Illustration.jsx` and register it in `MAP`.
   Follow the technical-plate language (grid + rings + real labelled callouts).
 - **New plate colour?** Add a `t-*` class in `index.css` *and* map the `theme` key in
-  `App.jsx`'s `plateClass`. Note: the class names `t-sage` / `t-teal` are historical —
-  `t-sage` is now periwinkle (synapse) and `t-teal` is pale blue (soundscapes).
+  `App.jsx`'s `plateClass`. Note: the class names `t-sage` / `t-teal` are historical — both are
+  now **white** `#fbf9f4` (synapse & soundscapes were green/clay, then whitened 2026-07-21 at his
+  request), same as `t-paper` (simtrader). Their `PAL` `line` colours were also neutralised to
+  warm charcoal `#3a352d` so the plates read truly white (no green/orange tint from the grid or
+  callouts). When changing a project's colour, move all three together: the card bg (`.card-*`),
+  the plate bg (`t-*`), and the `PAL` `line` colour.
 - Keep dependencies lean. Three.js is lazy-loaded on purpose — don't import it into the
   main bundle.
 - After any change, run `npm run build` and re-check the one-viewport fit.
@@ -211,8 +280,8 @@ login-gated downloads).
 
 ## 10. Open TODOs
 
-- [ ] Mascot: he doesn't like the current owl. Either find a **rigged** owl (real blink +
-      eye tracking) or rework the presentation.
+- [x] Mascot: chosen — vintage engraved owl #1 (`OwlHero.jsx`) with SVG cursor-tracking
+      eyes over the hollowed engraving. (2026-07-21)
 - [ ] He may still want the card faces pushed further into the technical-plate language
       (they currently show the schematic as a faint texture behind the label).
 - [ ] Mobile pass — the responsive rules exist but have not been reviewed on a device.
