@@ -11,6 +11,18 @@ export const meta = {
   quip: "I'm not overengineering, I'm just 26 microservices deep.",
 }
 
+// Page 2 — the "about" spread you fold down to. Plain text; edit freely.
+export const about = {
+  kicker: 'Colophon · The Engineer',
+  heading: 'Behind the issue.',
+  lead: 'Furkan Kocataş — computer engineer, based in Türkiye, building AI systems.',
+  body: [
+    'I work across the whole stack: air-gapped, fully-offline enterprise AI platforms; quantitative research tools; Rust desktop apps; and the occasional playful web toy.',
+    'I like systems that are honest — they report when there is no edge — private by design, and a little bit delightful. I ship things, run them, and keep whatever taught me something worth keeping.',
+  ],
+  note: 'Set in Fraunces & Courier Prime. Plates are public-domain engravings (Wellcome, Rijksmuseum, Bewick, Kircher).',
+}
+
 // Every openable project. `illo` picks the SVG in Illustration.jsx.
 export const projects = [
   {

@@ -151,18 +151,16 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 
 /* card themes */
 .hero { grid-area: hero; justify-content: flex-start; border-color: var(--color-ink); }
-.card-huna { grid-area: huna; background: linear-gradient(155deg, #e3e4f2 0%, #d2d4ea 100%); color: var(--color-ink); border-color: #a3a6c4; }
-.card-simtrader { grid-area: sim; background: #fbf9f4; }
-.card-soundscapes { grid-area: sound; background: linear-gradient(155deg, #dde9ee 0%, #c7dae2 100%); color: var(--color-ink); border-color: #9db7c2; }
+.card-huna { grid-area: huna; background: var(--color-paper); color: var(--color-ink); border-color: var(--color-ink); }
+.card-simtrader { grid-area: sim; background: var(--color-paper); }
+.card-soundscapes { grid-area: sound; background: var(--color-paper); color: var(--color-ink); border-color: var(--color-ink); }
 .card-more { grid-area: more; }
 
 /* the mesh art sits softly behind the label on these two */
 .card-huna .bg, .card-soundscapes .bg { opacity: 0.5; }
 
-.card-huna .cardname { font-size: clamp(30px, 3.6vw, 50px); }
-.card-simtrader .cardname { font-size: clamp(28px, 3.4vw, 46px); }
-.card-simtrader .cardname .dot { color: var(--color-red); }
-.card-soundscapes .cardname { font-size: clamp(22px, 2.4vw, 32px); }
+/* matched title size across the three project cards */
+.card-huna .cardname, .card-simtrader .cardname, .card-soundscapes .cardname { font-size: clamp(24px, 2.8vw, 40px); }
 
 .stamp {
   position: absolute; top: 14px; right: 16px;
@@ -180,7 +178,16 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 .hero h1 em { font-style: italic; color: var(--color-green); }
 .hero .lead { font-size: 12.5px; line-height: 1.6; margin-top: 16px; max-width: 46ch; color: #4a463d; }
 .hero .doodlewrap { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; min-height: 200px; margin-top: 8px; }
-.hero .doodlewrap svg { width: 82%; max-height: 100%; }
+.hero .doodlewrap svg { width: 100%; max-height: 100%; }
+
+/* mascot chooser */
+.owlpick { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.owlpick-stage { flex: 1; min-height: 0; background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.owlpick-stage svg { width: 100%; height: 100%; }
+.owlpick-ctl { display: flex; align-items: center; justify-content: center; gap: 12px; padding-top: 4px; font-family: 'Courier Prime', monospace; font-size: 10px; letter-spacing: 0.08em; color: #6a655a; }
+.owlpick-ctl button { background: none; border: none; cursor: pointer; font: inherit; font-size: 15px; line-height: 1; color: var(--color-ink); padding: 0 4px; opacity: 0.6; transition: opacity 0.15s, color 0.15s; }
+.owlpick-ctl button:hover { opacity: 1; color: var(--color-red); }
+.owlpick-ctl span { min-width: 128px; text-align: center; }
 .hero .quip { font-size: 12px; font-weight: 700; border-top: 1.5px dashed rgb(29 27 22 / 0.4); padding-top: 10px; margin-top: 8px; }
 
 /* more/index list */
@@ -237,9 +244,9 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
   border-right: 1.5px solid var(--color-ink);
 }
 /* all plates are pastel paper now; each project's schematic sits on its own tone */
-.detail .plate.t-paper { background: #fbf9f4; }
-.detail .plate.t-sage { background: #e0e1f1; }
-.detail .plate.t-teal { background: #dae7ec; }
+.detail .plate.t-paper { background: var(--color-paper); }
+.detail .plate.t-sage { background: var(--color-paper); }
+.detail .plate.t-teal { background: var(--color-paper); }
 .detail .plate.t-green { background: #cfe0cb; }
 .detail .plate.t-blue { background: #d8e2ec; }
 .detail .plate.t-mustard { background: #ece0c4; }
@@ -330,3 +337,56 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
   .detail .plate { border-right: none; border-bottom: 1.5px solid var(--color-ink); }
   .footstrip { flex-direction: column; gap: 8px; align-items: flex-start; }
 }
+
+/* ============================================================
+   BOOK FOLD — the cover (page 1) folds down to reveal about (page 2)
+   ============================================================ */
+.book { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+.leaf { position: absolute; inset: 0; transform-origin: center center; }
+.leaf-front { z-index: 1; }
+.leaf-back { z-index: 2; pointer-events: none; will-change: transform, box-shadow; } /* slides up OVER the cover */
+.book.folded .leaf-back { pointer-events: auto; }
+
+/* page-flip control (About / Back) — sits in the nav / footer */
+.pageflip {
+  background: none; border: none; cursor: pointer; font: inherit; padding: 0;
+  color: var(--color-ink); letter-spacing: inherit; text-transform: inherit;
+  border-bottom: 1.5px solid transparent; transition: color .15s, border-color .15s;
+}
+.pageflip:hover { color: var(--color-red); border-bottom-color: var(--color-red); }
+
+/* ABOUT page (page 2) */
+.about-body { display: grid; grid-template-columns: 1.6fr 1fr; gap: 46px; align-content: center; padding: 8px 6px; min-height: 0; }
+.about-main .kick { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-red); }
+.about-h { font-family: var(--font-serif); font-weight: 600; font-size: clamp(40px, 6vw, 92px); line-height: 0.98; letter-spacing: -0.02em; margin: 10px 0 18px; }
+.about-lead { font-family: var(--font-serif); font-size: clamp(18px, 2vw, 26px); font-style: italic; line-height: 1.3; margin: 0 0 20px; max-width: 32ch; }
+.about-p { font-size: 13px; line-height: 1.7; color: #4a463d; max-width: 54ch; margin: 0 0 12px; }
+.about-side { border-left: 1.5px solid var(--color-ink); padding-left: 28px; display: flex; flex-direction: column; justify-content: center; }
+.about-links { list-style: none; padding: 0; margin: 10px 0 24px; }
+.about-links li { border-top: 1px solid rgb(29 27 22 / 0.18); }
+.about-links li:last-child { border-bottom: 1px solid rgb(29 27 22 / 0.18); }
+.about-links a { display: flex; justify-content: space-between; align-items: center; padding: 13px 2px; font-family: var(--font-serif); font-size: clamp(20px, 2.4vw, 30px); text-decoration: none; transition: color .15s, padding-left .2s; }
+.about-links a:hover { color: var(--color-red); padding-left: 8px; }
+.about-links a span { font-size: 14px; opacity: 0.55; }
+.about-note { font-size: 10.5px; line-height: 1.6; color: #6a655a; letter-spacing: 0.02em; }
+
+@media (max-width: 920px) {
+  .about-body { grid-template-columns: 1fr; gap: 22px; }
+  .about-side { border-left: none; padding-left: 0; border-top: 1.5px solid var(--color-ink); padding-top: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-front { transition: none !important; }
+}
+
+/* colophon engraving on the about page — a faint hand-with-quill watermark */
+.paper.about { overflow: hidden; }
+.about-engraving {
+  position: absolute; right: -3%; bottom: -5%;
+  width: 46%; max-width: 640px; height: auto;
+  opacity: 0.38; pointer-events: none; user-select: none; z-index: 0;
+  transform: scaleX(-1); /* quill points up-left, toward the content */
+}
+.paper.about .masthead,
+.paper.about .about-body,
+.paper.about .footstrip { position: relative; z-index: 1; }
+@media (max-width: 920px) { .about-engraving { width: 62%; opacity: 0.24; } }

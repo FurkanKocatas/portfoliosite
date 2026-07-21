@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react'
 
-// Technical-plate illustrations — dense engraved schematics on pastel paper.
-// Each project is a "patent diagram" of itself: grid, rings/axes, labelled callouts,
-// crosshairs, corner ticks. Transparent background — the plate/card supplies the pastel.
+// Technical-plate illustrations — a vintage engraving on a faint grid with corner ticks and a
+// single FIG caption. Labelled callouts / crosshairs were removed for a cleaner look
+// (2026-07-21). Transparent background — the plate/card supplies the paper tone.
 
 const MONO = "'Courier Prime', monospace"
 
 const PAL = {
-  huna: { line: '#3f4a7a', accent: '#c9503a' },
+  huna: { line: '#3a352d', accent: '#c9503a' },
   simtrader: { line: '#1d1b16', accent: '#c9503a', up: '#2f7d27' },
-  soundscapes: { line: '#2c5163', accent: '#c9503a' },
+  soundscapes: { line: '#3a352d', accent: '#c9503a' },
   wallpapp: { line: '#2f4b63', accent: '#c9503a' },
   dairymind: { line: '#6b551f', accent: '#c9503a' },
   luminaft: { line: '#7a3f34', accent: '#c95a3f' },
@@ -34,50 +34,40 @@ function Frame({ id, line, children }) {
   )
 }
 
-function Callout({ x, y, tx, ty, text, line, anchor = 'start' }) {
-  return (
-    <g>
-      <line x1={x} y1={y} x2={tx} y2={ty} stroke={line} strokeWidth="0.7" opacity="0.7" />
-      <circle cx={x} cy={y} r="2" fill={line} />
-      <text x={tx} y={ty - 4} fontFamily={MONO} fontSize="9" letterSpacing="1" fill={line} opacity="0.9" textAnchor={anchor}>{text}</text>
-    </g>
-  )
-}
-
-/* ---------- SYNAPSE — neural core schematic ---------- */
+/* ---------- SYNAPSE — engraved "mapped mind" plate ---------- */
+// Vintage phrenology head (public domain, Wellcome Collection) — bg removed, single ink —
+// as the platform's "mapped mind".
 function Huna() {
-  const { line, accent } = PAL.huna
-  const cx = 200, cy = 210
-  const spokes = Array.from({ length: 16 }, (_, i) => {
-    const a = (i / 16) * Math.PI * 2
-    return <line key={i} x1={cx + Math.cos(a) * 66} y1={cy + Math.sin(a) * 66} x2={cx + Math.cos(a) * 150} y2={cy + Math.sin(a) * 150} stroke={line} strokeWidth="0.8" opacity="0.7" />
-  })
-  const nodes = Array.from({ length: 16 }, (_, i) => {
-    const a = (i / 16) * Math.PI * 2
-    return <circle key={i} cx={cx + Math.cos(a) * 112} cy={cy + Math.sin(a) * 112} r={i % 4 === 0 ? 3.4 : 1.8} fill={i % 4 === 0 ? line : line} opacity={i % 4 === 0 ? 0.95 : 0.6} />
-  })
+  const { line } = PAL.huna
+  const src = `${import.meta.env.BASE_URL}plates/synapse.webp`
   return (
     <Frame id="huna" line={line}>
-      <g fill="none" stroke={line}>
-        <circle cx={cx} cy={cy} r="150" strokeWidth="1" strokeDasharray="2 6" opacity="0.55" />
-        <circle cx={cx} cy={cy} r="112" strokeWidth="1" opacity="0.8" />
-        <circle cx={cx} cy={cy} r="66" strokeWidth="1" strokeDasharray="4 4" opacity="0.7" />
-      </g>
-      {spokes}{nodes}
-      <g stroke={accent} strokeWidth="1.2"><line x1={cx} y1={cy - 26} x2={cx} y2={cy + 26} /><line x1={cx - 26} y1={cy} x2={cx + 26} y2={cy} /></g>
-      <circle cx={cx} cy={cy} r="7" fill={accent} />
-      <Callout x={cx + Math.cos(-0.5) * 112} y={cy + Math.sin(-0.5) * 112} tx={330} ty={96} text="vLLM · 35B" line={line} />
-      <Callout x={cx + Math.cos(2.4) * 112} y={cy + Math.sin(2.4) * 112} tx={40} ty={330} text="qdrant" line={line} />
-      <Callout x={cx + Math.cos(1.0) * 112} y={cy + Math.sin(1.0) * 112} tx={300} ty={360} text="openfga" line={line} />
-      <text x="30" y="60" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.75">FIG.01 · 26 SERVICES</text>
+      <image href={src} x="72" y="18" width="256" height="408" preserveAspectRatio="xMidYMid meet" />
+      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.01 · 26 SERVICES</text>
     </Frame>
   )
 }
 
-/* ---------- SIMTRADER — engraved chart schematic ---------- */
-// SimTrader kept in its ORIGINAL form (chunky red+black candlesticks on cream) —
-// Furkan liked this one; it does NOT get the technical-plate treatment.
+/* ---------- SIMTRADER — engraved caduceus (symbol of commerce) plate ---------- */
+// The caduceus — Mercury's staff, the classical symbol of trade/finance — isolated from a
+// Mercury engraving (no figure). Chosen over a bull (read like dairymind's cow) and over the
+// full Mercury statue (nude). The beloved candlestick version is preserved below as
+// SimTraderCandles (unused). To revert: point MAP.simtrader back at SimTraderCandles.
 function SimTrader() {
+  const { line, accent } = PAL.simtrader
+  const src = `${import.meta.env.BASE_URL}plates/simtrader.webp`
+  return (
+    <Frame id="simtrader" line={line}>
+      {/* faint red uptrend behind the caduceus — a nod to the original candlesticks */}
+      <path d="M34 392 C 150 350 250 208 388 92" stroke={accent} strokeWidth="1.3" fill="none" strokeDasharray="1 9" strokeLinecap="round" opacity="0.4" />
+      <image href={src} x="125" y="28" width="150" height="392" preserveAspectRatio="xMidYMid meet" />
+      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.02 · PAPER ONLY</text>
+    </Frame>
+  )
+}
+
+// Backup — original candlestick artwork (kept for easy revert; see note above).
+function SimTraderCandles() {
   const ink = '#1d1b16'
   return (
     <svg viewBox="0 0 700 460" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
@@ -95,130 +85,66 @@ function SimTrader() {
   )
 }
 
-/* ---------- SOUNDSCAPES — globe schematic ---------- */
+/* ---------- SOUNDSCAPES — engraved armillary sphere plate ---------- */
+// Vintage armillary sphere (public domain) — bg removed, single ink — "spin the world".
 function Soundscapes() {
   const { line, accent } = PAL.soundscapes
-  const cx = 200, cy = 210, R = 132
-  const lats = [-60, -30, 0, 30, 60].map((lat, i) => {
-    const rad = (lat * Math.PI) / 180
-    const y = cy + Math.sin(rad) * R, rx = Math.cos(rad) * R
-    return <ellipse key={i} cx={cx} cy={y} rx={rx} ry={rx * 0.26} fill="none" stroke={line} strokeWidth="0.8" opacity="0.6" />
-  })
-  const lons = Array.from({ length: 6 }, (_, k) => {
-    const t = (k / 6) * Math.PI
-    const rx = Math.max(1, Math.abs(Math.cos(t)) * R)
-    return <ellipse key={k} cx={cx} cy={cy} rx={rx} ry={R} fill="none" stroke={line} strokeWidth="0.8" opacity="0.55" />
-  })
-  const ticks = Array.from({ length: 36 }, (_, i) => {
-    const a = (i / 36) * Math.PI * 2
-    return <line key={i} x1={cx + Math.cos(a) * (R + 6)} y1={cy + Math.sin(a) * (R + 6)} x2={cx + Math.cos(a) * (R + (i % 3 ? 10 : 14))} y2={cy + Math.sin(a) * (R + (i % 3 ? 10 : 14))} stroke={line} strokeWidth="0.7" opacity="0.5" />
-  })
-  const city = { x: cx + Math.cos(-0.9) * R, y: cy + Math.sin(-0.9) * R }
+  const src = `${import.meta.env.BASE_URL}plates/soundscapes.webp`
   return (
     <Frame id="soundscapes" line={line}>
-      {ticks}
-      <circle cx={cx} cy={cy} r={R} fill="none" stroke={line} strokeWidth="1.4" />
-      {lats}{lons}
-      <line x1={cx - R} y1={cy} x2={cx + R} y2={cy} stroke={line} strokeWidth="1" opacity="0.6" />
-      {/* sound rings */}
+      <image href={src} x="16" y="86" width="368" height="280" preserveAspectRatio="xMidYMid meet" />
+      {/* sound rings on the central earth */}
       <g fill="none" stroke={accent}>
-        <circle cx={city.x} cy={city.y} r="16" strokeWidth="1.4" strokeDasharray="2 4" />
-        <circle cx={city.x} cy={city.y} r="30" strokeWidth="1" strokeDasharray="2 5" opacity="0.7" />
+        <circle cx="200" cy="224" r="20" strokeWidth="1.2" strokeDasharray="2 4" />
+        <circle cx="200" cy="224" r="34" strokeWidth="1" strokeDasharray="2 5" opacity="0.7" />
       </g>
-      <circle cx={city.x} cy={city.y} r="4.5" fill={accent} />
-      <Callout x={city.x} y={city.y} tx={320} ty={110} text="iTunes API" line={line} />
-      <text x="30" y="60" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.75">FIG.03 · 186 COUNTRIES</text>
-      <text x="250" y="392" fontFamily={MONO} fontSize="9" letterSpacing="1" fill={line} opacity="0.8">WEB AUDIO</text>
+      <circle cx="200" cy="224" r="4" fill={accent} />
+      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.03 · 186 COUNTRIES</text>
     </Frame>
   )
 }
 
-/* ---------- WALLPAPP — monitor exploded diagram ---------- */
+/* ---------- WALLPAPP — engraved magic-lantern plate ---------- */
+// Vintage magic lantern (Kircher, public domain) — projecting a living image, like a
+// live wallpaper behind the desktop.
 function Wallpapp() {
-  const { line, accent } = PAL.wallpapp
+  const { line } = PAL.wallpapp
+  const src = `${import.meta.env.BASE_URL}plates/wallpapp.webp`
   return (
     <Frame id="wallpapp" line={line}>
-      {/* stacked parallax layers */}
-      {[0, 1, 2].map((i) => (
-        <g key={i}>
-          <rect x={90 - i * 14} y={150 + i * 16} width="220" height="120" fill="none" stroke={line} strokeWidth="1" opacity={0.5 + i * 0.15} strokeDasharray={i ? '3 4' : '0'} />
-          <text x={92 - i * 14} y={146 + i * 16} fontFamily={MONO} fontSize="8" fill={line} opacity="0.7">{`L${3 - i}`}</text>
-        </g>
-      ))}
-      {/* screen frame w/ dimension lines */}
-      <rect x="90" y="150" width="220" height="120" fill="none" stroke={line} strokeWidth="1.6" />
-      <g stroke={line} strokeWidth="0.8" opacity="0.7">
-        <line x1="90" y1="130" x2="310" y2="130" /><path d="M94 127 l -4 3 l 4 3 M306 127 l 4 3 l -4 3" fill="none" />
-        <text x="180" y="124" fontFamily={MONO} fontSize="8" fill={line}>1920</text>
-      </g>
-      {/* sun */}
-      <circle cx="150" cy="200" r="20" fill="none" stroke={line} strokeWidth="1.4" />
-      {/* clock schematic */}
-      <circle cx="270" cy="205" r="26" fill="none" stroke={line} strokeWidth="1.4" />
-      {Array.from({ length: 12 }, (_, i) => {
-        const a = (i / 12) * Math.PI * 2
-        return <line key={i} x1={270 + Math.cos(a) * 22} y1={205 + Math.sin(a) * 22} x2={270 + Math.cos(a) * 26} y2={205 + Math.sin(a) * 26} stroke={line} strokeWidth="0.8" />
-      })}
-      <line x1="270" y1="205" x2="270" y2="188" stroke={accent} strokeWidth="1.6" />
-      <line x1="270" y1="205" x2="284" y2="212" stroke={accent} strokeWidth="1.6" />
-      <Callout x="110" y="310" tx="70" ty="360" text="WorkerW" line={line} />
-      <text x="30" y="60" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.75">FIG.04 · TAURI · 40 MB</text>
+      <image href={src} x="16" y="122" width="368" height="208" preserveAspectRatio="xMidYMid meet" />
+      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.04 · ~40 MB</text>
     </Frame>
   )
 }
 
-/* ---------- DAIRYMIND — cow + digital-twin schematic ---------- */
+/* ---------- DAIRYMIND — engraved dairy-cow plate ---------- */
+// Vintage cow etching (public domain) — the farm the digital twin models.
 function DairyMind() {
-  const { line, accent } = PAL.dairymind
-  const cow = "M250 250 q 6 -46 58 -46 q 10 -20 26 -8 q -6 12 -15 12 q 32 6 32 44 q 0 20 -6 36 l -11 0 l -3 -20 l -9 0 l 0 20 l -11 0 l 0 -22 q -26 4 -44 -4 l -2 26 l -11 0 l 0 -28 q -11 -8 -8 -28 q 2 -13 17 -14 z"
+  const { line } = PAL.dairymind
+  const src = `${import.meta.env.BASE_URL}plates/dairymind.webp`
   return (
     <Frame id="dairymind" line={line}>
-      {/* ghost twin */}
-      <path d={cow} transform="translate(-16 -12)" fill="none" stroke={line} strokeWidth="1" strokeDasharray="2 5" opacity="0.6" />
-      {/* real */}
-      <path d={cow} fill="none" stroke={line} strokeWidth="1.8" />
-      <circle cx="336" cy="212" r="3" fill={line} />
-      {/* sensor points */}
-      <circle cx="300" cy="220" r="3.5" fill={accent} />
-      <circle cx="330" cy="240" r="2.5" fill={line} />
-      {/* data panel schematic */}
-      <g stroke={line} strokeWidth="1" fill="none">
-        <rect x="60" y="90" width="110" height="70" />
-        <polyline points="70,140 88,120 104,130 120,104 138,116 160,96" strokeWidth="1.4" />
-        <line x1="70" y1="104" x2="120" y2="104" opacity="0.4" />
-      </g>
-      <Callout x="300" y="220" tx="150" ty="120" text="sensor" line={line} />
-      <text x="220" y="300" fontFamily={MONO} fontSize="9" fill={line} opacity="0.8">DIGITAL TWIN</text>
-      <text x="30" y="60" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.75">FIG.05 · 261 PARAMS</text>
+      <image href={src} x="20" y="104" width="360" height="244" preserveAspectRatio="xMidYMid meet" />
+      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.05 · 261 PARAMS</text>
     </Frame>
   )
 }
 
-/* ---------- LUMINAFT — orbital mechanics plate ---------- */
+/* ---------- LUMINAFT — engraved comet plate ---------- */
+// Vintage comet (public domain, tone-inverted so the bright comet becomes ink) —
+// deep-space WebGL, "engineered to illuminate".
 function Luminaft() {
-  const { line, accent } = PAL.luminaft
-  const cx = 200, cy = 215
+  const { line } = PAL.luminaft
+  const src = `${import.meta.env.BASE_URL}plates/luminaft.webp`
   return (
     <Frame id="luminaft" line={line}>
-      <g fill="none" stroke={line}>
-        <ellipse cx={cx} cy={cy} rx="150" ry="56" strokeWidth="1" strokeDasharray="3 5" opacity="0.7" transform={`rotate(-22 ${cx} ${cy})`} />
-        <ellipse cx={cx} cy={cy} rx="120" ry="44" strokeWidth="1" opacity="0.6" transform={`rotate(24 ${cx} ${cy})`} />
-        <ellipse cx={cx} cy={cy} rx="86" ry="86" strokeWidth="0.8" strokeDasharray="2 6" opacity="0.5" />
-      </g>
-      <circle cx={cx} cy={cy} r="26" fill="none" stroke={line} strokeWidth="1.6" />
-      <path d={`M${cx - 18} ${cy - 6} q 18 10 36 0`} fill="none" stroke={line} strokeWidth="1" opacity="0.7" />
-      {/* satellites */}
-      <circle cx={cx + 138} cy={cy - 40} r="4.5" fill={accent} />
-      <circle cx={cx - 100} cy={cy + 30} r="3.5" fill={line} />
-      {/* angle arc */}
-      <path d={`M${cx + 40} ${cy} A 40 40 0 0 1 ${cx + 28} ${cy + 28}`} fill="none" stroke={accent} strokeWidth="1" />
-      <text x={cx + 46} y={cy + 16} fontFamily={MONO} fontSize="8" fill={line} opacity="0.8">36°</text>
+      <image href={src} x="12" y="150" width="376" height="150" preserveAspectRatio="xMidYMid meet" />
       {/* stars */}
-      <g stroke={line} strokeWidth="1" opacity="0.7">
-        <path d="M100 110 l 0 12 M94 116 l 12 0" /><path d="M320 300 l 0 10 M315 305 l 10 0" />
+      <g stroke={line} strokeWidth="1" opacity="0.6">
+        <path d="M96 108 l 0 12 M90 114 l 12 0" /><path d="M328 328 l 0 10 M323 333 l 10 0" /><path d="M300 120 l 0 8 M296 124 l 8 0" />
       </g>
-      <Callout x={cx + 138} y={cy - 40} tx={300} ty={110} text="R3F · GLSL" line={line} />
-      <text x="30" y="60" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.75">FIG.06 · SHADERS</text>
+      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.06 · SHADERS</text>
     </Frame>
   )
 }
