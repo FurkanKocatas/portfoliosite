@@ -95,8 +95,8 @@ function Detail({ p, onClose }) {
 // Day/night control — an engraved sun and moon at the ends of an arch, with an orb that
 // slides along the arch (CSS offset-path). Sun side = day, moon side = night.
 function DayNightArch({ onToggle, onSet }) {
-  const base = import.meta.env.BASE_URL
   const SX = 25, SY = 43
+  const MX = 197, MY = 43, MR = 13 // engraved moon centre + radius
   // faceless engraved sunburst — alternating long/short tapered rays + a hatched disc
   const rays = Array.from({ length: 16 }, (_, i) => {
     const a = (i / 16) * Math.PI * 2, r1 = 7.6, r2 = i % 2 === 0 ? 12.4 : 10
@@ -107,6 +107,13 @@ function DayNightArch({ onToggle, onSet }) {
     const a = ((i + 0.5) / 12) * Math.PI * 2
     return <line key={`h${i}`} x1={SX + Math.cos(a) * 1.7} y1={SY + Math.sin(a) * 1.7}
       x2={SX + Math.cos(a) * 4.7} y2={SY + Math.sin(a) * 4.7} stroke="currentColor" strokeWidth="0.55" opacity="0.6" />
+  })
+  // engraved full moon: disc + craters + limb hatching for volume (drawn, no image)
+  const craters = [[-4, -5, 2.6], [3.5, 2, 3.3], [-3, 4.5, 1.6], [5, -4, 1.4], [1, 0, 0.9]]
+  const moonLimb = Array.from({ length: 9 }, (_, i) => {
+    const a = ((-58 + i * 15) * Math.PI) / 180
+    return <line key={`ml${i}`} x1={MX + Math.cos(a) * (MR - 0.7)} y1={MY + Math.sin(a) * (MR - 0.7)}
+      x2={MX + Math.cos(a) * (MR - 3.6)} y2={MY + Math.sin(a) * (MR - 3.6)} stroke="currentColor" strokeWidth="0.5" opacity="0.5" />
   })
   return (
     <div className="daynight" role="button" tabIndex={0} aria-label="Toggle day and night"
@@ -121,9 +128,14 @@ function DayNightArch({ onToggle, onSet }) {
           <circle cx={SX} cy={SY} r="6.2" fill="none" stroke="currentColor" strokeWidth="1.2" />
           {hatch}
         </g>
-        {/* moon (night) — engraved full moon with craters */}
-        <image className="dn-moon" href={`${base}plates/moon.webp`} x="183" y="28" width="30" height="30"
-          preserveAspectRatio="xMidYMid meet" onClick={(e) => { e.stopPropagation(); onSet(true) }} />
+        {/* moon (night) — faceless engraved full moon, drawn to match the sun */}
+        <g className="dn-moon" onClick={(e) => { e.stopPropagation(); onSet(true) }}>
+          <circle cx={MX} cy={MY} r={MR} fill="none" stroke="currentColor" strokeWidth="1.2" />
+          {moonLimb}
+          {craters.map(([dx, dy, r], i) => (
+            <circle key={`c${i}`} cx={MX + dx} cy={MY + dy} r={r} fill="none" stroke="currentColor" strokeWidth="0.65" opacity="0.85" />
+          ))}
+        </g>
       </svg>
       <span className="dn-orb" aria-hidden="true" />
     </div>
@@ -206,18 +218,21 @@ export default function App() {
   )
   const [folded, setFolded] = useState(false)
   const animRef = useRef(null)
-  const snapRef = useRef(null)
+  const wheelLock = useRef(false)
 
   useEffect(() => fold.on('change', (v) => setFolded(v > 0.5)), [fold])
 
-  const settle = () => {
-    clearTimeout(snapRef.current)
-    snapRef.current = setTimeout(() => {
-      animRef.current?.stop()
-      animRef.current = animate(fold, fold.get() > 0.35 ? 1 : 0, { type: 'spring', stiffness: 90, damping: 20 })
-    }, 120)
+  // one decisive scroll (or a button) turns the whole page; momentum wheel events
+  // during the animation are locked out so it never over-shoots or double-turns.
+  const foldTo = (v) => {
+    wheelLock.current = true
+    animRef.current?.stop()
+    animRef.current = animate(fold, v, {
+      type: 'spring', stiffness: 100, damping: 20,
+      onComplete: () => { wheelLock.current = false },
+    })
+    setTimeout(() => { wheelLock.current = false }, 750) // safety unlock
   }
-  const foldTo = (v) => { animRef.current?.stop(); animRef.current = animate(fold, v, { type: 'spring', stiffness: 78, damping: 19 }) }
 
   useEffect(() => {
     const el = bookRef.current
@@ -225,9 +240,12 @@ export default function App() {
     const onWheel = (e) => {
       if (window.innerWidth <= 920 || active) return // mobile scrolls; don't fold behind a detail
       e.preventDefault()
-      animRef.current?.stop()
-      fold.set(Math.min(1, Math.max(0, fold.get() + e.deltaY * 0.0013)))
-      settle()
+      if (wheelLock.current) return
+      const dir = e.deltaY > 6 ? 1 : e.deltaY < -6 ? -1 : 0
+      if (!dir) return
+      const cur = fold.get()
+      if (dir > 0 && cur < 0.5) foldTo(1)      // scroll down on the cover → about
+      else if (dir < 0 && cur > 0.5) foldTo(0) // scroll up on the about page → cover
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
