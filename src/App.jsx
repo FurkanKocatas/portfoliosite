@@ -92,6 +92,44 @@ function Detail({ p, onClose }) {
   )
 }
 
+// Day/night control — an engraved sun and moon at the ends of an arch, with an orb that
+// slides along the arch (CSS offset-path). Sun side = day, moon side = night.
+function DayNightArch({ onToggle, onSet }) {
+  const base = import.meta.env.BASE_URL
+  const SX = 25, SY = 43
+  // faceless engraved sunburst — alternating long/short tapered rays + a hatched disc
+  const rays = Array.from({ length: 16 }, (_, i) => {
+    const a = (i / 16) * Math.PI * 2, r1 = 7.6, r2 = i % 2 === 0 ? 12.4 : 10
+    return <line key={`r${i}`} x1={SX + Math.cos(a) * r1} y1={SY + Math.sin(a) * r1}
+      x2={SX + Math.cos(a) * r2} y2={SY + Math.sin(a) * r2} stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+  })
+  const hatch = Array.from({ length: 12 }, (_, i) => {
+    const a = ((i + 0.5) / 12) * Math.PI * 2
+    return <line key={`h${i}`} x1={SX + Math.cos(a) * 1.7} y1={SY + Math.sin(a) * 1.7}
+      x2={SX + Math.cos(a) * 4.7} y2={SY + Math.sin(a) * 4.7} stroke="currentColor" strokeWidth="0.55" opacity="0.6" />
+  })
+  return (
+    <div className="daynight" role="button" tabIndex={0} aria-label="Toggle day and night"
+      onClick={onToggle}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle() } }}>
+      <svg className="dn-svg" viewBox="0 0 220 60" aria-hidden="true">
+        {/* the sky arch (also the orb's track) */}
+        <path d="M 40 46 A 70 34 0 0 1 180 46" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="1.5 4" opacity="0.5" />
+        {/* sun (day) — faceless sunburst */}
+        <g className="dn-sun" onClick={(e) => { e.stopPropagation(); onSet(false) }}>
+          {rays}
+          <circle cx={SX} cy={SY} r="6.2" fill="none" stroke="currentColor" strokeWidth="1.2" />
+          {hatch}
+        </g>
+        {/* moon (night) — engraved full moon with craters */}
+        <image className="dn-moon" href={`${base}plates/moon.webp`} x="183" y="28" width="30" height="30"
+          preserveAspectRatio="xMidYMid meet" onClick={(e) => { e.stopPropagation(); onSet(true) }} />
+      </svg>
+      <span className="dn-orb" aria-hidden="true" />
+    </div>
+  )
+}
+
 // Page 2 — the "about" spread revealed by folding the cover down.
 function AboutPage({ onBack }) {
   return (
@@ -102,7 +140,6 @@ function AboutPage({ onBack }) {
 
         <div className="masthead">
           <span className="brand">{meta.name}<span className="dot">.</span></span>
-          <span className="mid">{about.kicker} · {meta.issue}</span>
           <nav>
             <button className="pageflip" onClick={onBack}>⌃ Cover</button>
           </nav>
@@ -143,6 +180,16 @@ export default function App() {
   useEffect(() => {
     window.__openProject = (id) => setActive(id)
   }, [])
+
+  // night mode — a full colour inversion: white drawings on black paper
+  const [night, setNight] = useState(() => {
+    try { return localStorage.getItem('night') === '1' } catch { return false }
+  })
+  useEffect(() => {
+    document.body.classList.toggle('night', night)
+    try { localStorage.setItem('night', night ? '1' : '0') } catch { /* ignore */ }
+  }, [night])
+  const toggleNight = () => setNight((n) => !n)
 
   // ── page fold: the cover turns around its spine to reveal the about page ──
   // fold 0 = cover, 1 = folded away (about shown). Scrubbed by wheel, or driven by the buttons.
@@ -188,6 +235,7 @@ export default function App() {
 
   return (
     <div className="grain">
+      <DayNightArch onToggle={toggleNight} onSet={setNight} />
       <div ref={bookRef} className={`book ${folded ? 'folded' : ''}`}>
 
         {/* PAGE 2 — slides up from the bottom, OVER the cover, with a top-edge drop shadow */}
@@ -208,7 +256,6 @@ export default function App() {
           {/* masthead */}
           <motion.div className="masthead" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
             <span className="brand">{meta.name}<span className="dot">.</span></span>
-            <span className="mid">{meta.role} · {meta.location} · {meta.issue}</span>
             <nav>
               <a href={`mailto:${meta.email}`}>Email</a>
               <a href={meta.github} target="_blank" rel="noreferrer">GitHub</a>

@@ -126,6 +126,22 @@ Static only — **no Node on the server**. `npm run build`, then upload the **co
   green `#3e9433`, red `#c94f38`, blue `#34506b`, mustard `#d9a441`.
 - Motion: staggered "print reveal" entrance, hard-shadow card hover, `prefers-reduced-motion`
   respected.
+- **Night mode (2026-07-21):** inverts the *whole* page via
+  `body.night .grain { filter: invert(1) hue-rotate(180deg) }` (+ dark `body` bg) — so paper→black,
+  ink→white, and every engraving becomes a **white drawing on black paper** with no per-image work.
+  `hue-rotate(180)` keeps the brand accents (green/red) recognizable; drop it for a pure
+  photo-negative. State is React (`night`) → `body.night` class, persisted in `localStorage`.
+  Because it's a page-level filter it also covers the detail overlay and the about page.
+  - **Toggle = the `DayNightArch`** (`.daynight`), a fixed top-centre control: a **faceless engraved
+    sunburst** (drawn SVG — rays + hatched disc, no face) on the left and an **engraved full moon
+    with craters** on the right (`public/plates/moon.webp`, from Claude Mellan's 1635 full-moon
+    engraving; `owl-src/src7/`). *No faces* on either, per Furkan. They sit at the ends of a dashed
+    arch, with an **orb that slides along the arch** (CSS
+    `offset-path`; `body.night .dn-orb { offset-distance: 100% }` → moon side). It replaced the old
+    text buttons *and* the masthead subtitle. **Gotcha:** the orb needs `top:0; left:0` or its
+    `offset-path` is offset from its static position; and `.daynight` box must equal the SVG
+    `viewBox` (220×60) so the orb's path matches the drawn arch. Being inside `.grain`, it auto-
+    inverts with the page.
 
 ---
 

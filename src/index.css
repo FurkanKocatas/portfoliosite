@@ -112,7 +112,7 @@ a { color: inherit; }
 }
 .masthead .brand .dot { color: var(--color-red); }
 .masthead .mid { color: #6d675a; text-align: center; flex: 1; }
-.masthead nav a { text-decoration: none; margin-left: 18px; }
+.masthead nav a, .masthead nav button { text-decoration: none; margin-left: 18px; }
 .masthead nav a:hover { color: var(--color-red); }
 
 /* grid */
@@ -390,3 +390,31 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 .paper.about .about-body,
 .paper.about .footstrip { position: relative; z-index: 1; }
 @media (max-width: 920px) { .about-engraving { width: 62%; opacity: 0.24; } }
+
+/* ============================================================
+   NIGHT MODE — full colour inversion (white drawings on black paper)
+   ============================================================ */
+body.night { background: #0a0a09; }
+body.night .grain { filter: invert(1) hue-rotate(180deg); }
+/* keep the print grain subtle under inversion */
+body.night .grain::after { mix-blend-mode: screen; opacity: 0.05; }
+
+/* day/night arch slider (top-centre) — engraved sun & moon with a sliding orb */
+.daynight {
+  position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+  width: 220px; height: 60px; z-index: 60; cursor: pointer; color: var(--color-ink);
+}
+.dn-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.dn-sun, .dn-moon { cursor: pointer; transition: opacity 0.15s; }
+.dn-sun:hover, .dn-moon:hover { opacity: 0.62; }
+.dn-orb {
+  position: absolute; top: 0; left: 0; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--color-ink); box-shadow: 0 0 0 2.5px rgb(29 27 22 / 0.16);
+  offset-path: path('M 40 46 A 70 34 0 0 1 180 46');
+  offset-distance: 0%; offset-anchor: 50% 50%; offset-rotate: 0deg;
+  transition: offset-distance 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+body.night .dn-orb { offset-distance: 100%; }
+.backdrop { z-index: 100; }
+@media (max-width: 920px) { .daynight { top: 10px; transform: translateX(-50%) scale(0.82); } }
