@@ -5,7 +5,7 @@ export const meta = {
   role: 'Computer Engineer — AI Systems',
   location: 'Türkiye',
   issue: 'Issue 01 · 2026',
-  email: 'furkankocatas@gmail.com',
+  email: 'work.furkankocatas@gmail.com',
   github: 'https://github.com/FurkanKocatas',
   linkedin: 'https://www.linkedin.com/in/furkan-kocatas',
   quip: "I'm not overengineering, I'm just 26 microservices deep.",
@@ -40,7 +40,7 @@ export const contact = {
   // your inbox. Left empty, the form hands off to the visitor's mail client.
   accessKey: '',
   details: [
-    { label: 'Email', value: 'furkankocatas@gmail.com', href: 'mailto:furkankocatas@gmail.com' },
+    { label: 'Email', value: 'work.furkankocatas@gmail.com', href: 'mailto:work.furkankocatas@gmail.com' },
     { label: 'GitHub', value: 'FurkanKocatas', href: 'https://github.com/FurkanKocatas' },
     { label: 'LinkedIn', value: 'furkan-kocatas', href: 'https://www.linkedin.com/in/furkan-kocatas' },
   ],
