@@ -1,24 +1,24 @@
 import { useEffect, useRef } from 'react'
 
-// The author's portrait, with live eyes — the same trick the cover owl plays, so the
-// two pages rhyme. The plate ships with both irises hollowed to bare paper (see
-// tools/, r9.5 at the measured centroids); this component redraws each iris in ink
-// and rolls it toward the cursor, clipped to the socket so it never spills onto the
-// engraving. Honours prefers-reduced-motion.
-const NAT = { w: 640, h: 634 }          // the plate's natural size
-const SOCKET = 9.5                       // radius of the hollowed disc, in plate units
-const IRIS = 7.4
-const TRAVEL = 2.6                       // how far the iris rolls inside the socket
+// The author's portrait, with live eyes — the cover owl's trick, played on page 2.
+//
+// The owl's eyes were hollowed and redrawn, but that fails here: at this size any
+// iris I draw reads as a cartoon against a master engraving, however carefully it
+// is shaped. So nothing is drawn and nothing is removed. A soft-masked copy of the
+// plate's own iris pixels is laid over the original and nudged toward the cursor,
+// which keeps the engraving's exact texture and reads as a glance rather than a
+// googly eye. Honours prefers-reduced-motion.
+const NAT = { w: 640, h: 634 }   // the plate's natural size
 const EYES = [
-  { cx: 225.0, cy: 276.8 },
-  { cx: 333.9, cy: 264.9 },
+  { cx: 224, cy: 276 },          // measured from the ink centroid, not by eye
+  { cx: 332, cy: 265 },
 ]
-const INK = '#1d1b16'
-const PAPER = '#f4efe3'
+const LIFT = 7.5                 // radius of the lifted iris patch, in plate units
+const TRAVEL = 2.6               // how far the glance carries
 
 export default function PortraitEyes({ src, alt }) {
   const wrapRef = useRef(null)
-  const irisRefs = [useRef(null), useRef(null)]
+  const glanceRef = useRef(null)
 
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
@@ -29,19 +29,19 @@ export default function PortraitEyes({ src, alt }) {
     let raf
     const loop = () => {
       const el = wrapRef.current
-      if (el && mouse.has) {
+      if (el && mouse.has && glanceRef.current) {
         const r = el.getBoundingClientRect()
-        const sx = r.width / NAT.w, sy = r.height / NAT.h
-        EYES.forEach((eye, i) => {
-          const ex = r.left + eye.cx * sx
-          const ey = r.top + eye.cy * sy
-          let dx = mouse.x - ex, dy = mouse.y - ey
-          const d = Math.hypot(dx, dy) || 1
-          const m = Math.min(1, d / 220)          // ease off when the cursor is close
-          dx = (dx / d) * TRAVEL * m
-          dy = (dy / d) * TRAVEL * m
-          irisRefs[i].current?.setAttribute('transform', `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`)
-        })
+        // aim from the midpoint between the eyes, so both travel together
+        const mid = {
+          x: r.left + ((EYES[0].cx + EYES[1].cx) / 2 / NAT.w) * r.width,
+          y: r.top + ((EYES[0].cy + EYES[1].cy) / 2 / NAT.h) * r.height,
+        }
+        let dx = mouse.x - mid.x, dy = mouse.y - mid.y
+        const d = Math.hypot(dx, dy) || 1
+        const m = Math.min(1, d / 240)          // ease off when the cursor is close
+        dx = (dx / d) * TRAVEL * m
+        dy = (dy / d) * TRAVEL * m * 0.55       // eyes roll further sideways than up
+        glanceRef.current.setAttribute('transform', `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`)
       }
       raf = requestAnimationFrame(loop)
     }
@@ -60,24 +60,26 @@ export default function PortraitEyes({ src, alt }) {
       style={{ display: 'block' }}
     >
       <defs>
-        {EYES.map((e, i) => (
-          <clipPath key={i} id={`socket-${i}`}>
-            <circle cx={e.cx} cy={e.cy} r={SOCKET} />
-          </clipPath>
-        ))}
+        {/* feathered so the lifted patch has no cut edge */}
+        <radialGradient id="irisFade">
+          <stop offset="55%" stopColor="#fff" stopOpacity="1" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+        <mask id="irisMask">
+          {EYES.map((e, i) => (
+            <circle key={i} cx={e.cx} cy={e.cy} r={LIFT} fill="url(#irisFade)" />
+          ))}
+        </mask>
       </defs>
 
       <image href={src} x="0" y="0" width={NAT.w} height={NAT.h} />
 
-      {EYES.map((e, i) => (
-        <g key={i} clipPath={`url(#socket-${i})`}>
-          <g ref={irisRefs[i]}>
-            <circle cx={e.cx} cy={e.cy} r={IRIS} fill={INK} />
-            <circle cx={e.cx - IRIS * 0.34} cy={e.cy - IRIS * 0.38} r={IRIS * 0.27} fill={PAPER} opacity="0.92" />
-            <circle cx={e.cx + IRIS * 0.3} cy={e.cy + IRIS * 0.32} r={IRIS * 0.12} fill={PAPER} opacity="0.5" />
-          </g>
+      {/* the same plate again, but only where the irises are — and it moves */}
+      <g ref={glanceRef}>
+        <g mask="url(#irisMask)">
+          <image href={src} x="0" y="0" width={NAT.w} height={NAT.h} />
         </g>
-      ))}
+      </g>
     </svg>
   )
 }

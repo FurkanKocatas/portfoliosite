@@ -512,7 +512,9 @@ body.night .dn-orb { offset-distance: 100%; }
 .cf-field input:focus, .cf-field textarea:focus {
   border-color: var(--color-green); background: rgb(255 255 250 / 0.9);
 }
-.cf-actions { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
+/* the seal's height is reserved from the start, so sending changes nothing about
+   the layout and the row can never grow down into the Luminaft strip */
+.cf-actions { display: flex; align-items: center; gap: 16px; margin-top: 4px; min-height: 2.75rem; }
 .cf-actions button {
   font-family: var(--font-serif); font-weight: 700; font-size: 1rem;
   letter-spacing: -0.01em; color: var(--color-paper); background: var(--color-ink);
@@ -602,3 +604,19 @@ body.night .dn-orb { offset-distance: 100%; }
 .seal { display: block; width: 2.6rem; height: 2.6rem; color: var(--color-red); flex: none; }
 .seal svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgb(90 30 18 / 0.35)); }
 @media (prefers-reduced-motion: reduce) { .seal { animation: none; } }
+
+/* guaranteed breathing room between the correspondence body and the studio strip */
+.contact-body { padding-bottom: 1.1rem; }
+.contact-paper .studio { margin-top: 0; }
+
+/* the engraved hand writes while you type: a small, damped rock at the wrist */
+.about-engraving { transform-origin: 62% 78%; transition: transform 0.5s ease-out; }
+@keyframes quill-write {
+  0%   { transform: scaleX(-1) rotate(0deg)    translate(0, 0); }
+  25%  { transform: scaleX(-1) rotate(-0.7deg) translate(-1.5px, 0.6px); }
+  50%  { transform: scaleX(-1) rotate(0.4deg)  translate(0.8px, -0.5px); }
+  75%  { transform: scaleX(-1) rotate(-0.5deg) translate(-1px, 0.3px); }
+  100% { transform: scaleX(-1) rotate(0deg)    translate(0, 0); }
+}
+.about-engraving.is-writing { animation: quill-write 0.85s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .about-engraving.is-writing { animation: none; } }

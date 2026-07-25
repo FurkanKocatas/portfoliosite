@@ -211,6 +211,15 @@ function WaxSeal() {
 // The foot of page 2 — where people can actually write.
 function ContactSection({ onGo }) {
   const [state, setState] = useState('idle') // idle | sending | sent | error
+  // the engraved hand behind the form writes while you do
+  const [writing, setWriting] = useState(false)
+  const stopRef = useRef(null)
+  const onKeystroke = () => {
+    setWriting(true)
+    clearTimeout(stopRef.current)
+    stopRef.current = setTimeout(() => setWriting(false), 700)
+  }
+  useEffect(() => () => clearTimeout(stopRef.current), [])
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -245,7 +254,12 @@ function ContactSection({ onGo }) {
     <div className="sheet" id="contact">
       <div className="paper contact-paper">
         <span className="crop tl" /><span className="crop tr" /><span className="crop bl" /><span className="crop br" />
-        <img className="about-engraving" src={`${import.meta.env.BASE_URL}plates/quill.webp`} alt="" aria-hidden="true" />
+        <img
+          className={`about-engraving ${writing ? 'is-writing' : ''}`}
+          src={`${import.meta.env.BASE_URL}plates/quill.webp`}
+          alt=""
+          aria-hidden="true"
+        />
 
         <div className="masthead">
           <span className="brand">{meta.name}<span className="dot">.</span></span>
@@ -261,20 +275,20 @@ function ContactSection({ onGo }) {
               <div className="cf-row">
                 <label className="cf-field">
                   <span>Name</span>
-                  <input name="name" type="text" required autoComplete="name" />
+                  <input name="name" type="text" required autoComplete="name" onChange={onKeystroke} />
                 </label>
                 <label className="cf-field">
                   <span>Email</span>
-                  <input name="email" type="email" required autoComplete="email" />
+                  <input name="email" type="email" required autoComplete="email" onChange={onKeystroke} />
                 </label>
               </div>
               <label className="cf-field">
                 <span>Subject</span>
-                <input name="subject" type="text" />
+                <input name="subject" type="text" onChange={onKeystroke} />
               </label>
               <label className="cf-field">
                 <span>Message</span>
-                <textarea name="message" rows="4" required />
+                <textarea name="message" rows="4" required onChange={onKeystroke} />
               </label>
               <div className="cf-actions">
                 <button type="submit" disabled={state === 'sending'}>
