@@ -132,12 +132,20 @@ body.night .paper::before {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+/* the name is the centre of the masthead: the issue line and the contents strip
+   flank it on equal footing so it lands in the true middle */
+.masthead .issueline,
+.masthead .pagenav { flex: 1 1 0; min-width: 0; }
+.masthead .issueline { color: #6d675a; }
+.masthead .pagenav { justify-content: flex-end; }
 .masthead .brand {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: 1.375rem;
+  font-size: 1.5rem;
   letter-spacing: -0.01em;
   text-transform: none;
+  white-space: nowrap;
+  text-align: center;
 }
 .masthead .brand .dot { color: var(--color-red); }
 .masthead .mid { color: #6d675a; text-align: center; flex: 1; }
@@ -448,8 +456,7 @@ body.night .about-portrait img { filter: invert(1) hue-rotate(180deg); }
 .paper.about .footstrip,
 .paper.contact-paper .masthead,
 .paper.contact-paper .contact-body,
-.paper.contact-paper .studio,
-.paper.contact-paper .footstrip { position: relative; z-index: 1; }
+.paper.paper.contact-paper .footstrip { position: relative; z-index: 1; }
 @media (max-width: 920px) { .about-engraving { width: 62%; opacity: 0.2; } }
 
 /* page 2 sidebar — a specimen of the toolkit */
@@ -494,9 +501,12 @@ body.night .dn-orb { offset-distance: 100%; }
    PAGE 3 — CORRESPONDENCE (the foot of page 2)
    ============================================================ */
 .contact-paper { display: grid; grid-template-rows: auto 1fr auto auto; }
+/* on a wide sheet the two columns were thrown to opposite edges with a void
+   between them — hold them to a readable measure and centre the block */
 .contact-body {
-  display: grid; grid-template-columns: 1.5fr 1fr; gap: 46px;
-  align-content: center; padding: 8px 6px; min-height: 0;
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 5rem;
+  align-content: center; justify-content: center; padding: 8px 6px;
+  min-height: 0; width: 100%; max-width: 92rem; margin: 0 auto;
 }
 .contact-main .about-h { margin-bottom: 12px; }
 .contact-main .about-lead { margin-bottom: 22px; max-width: 40ch; }
@@ -545,26 +555,12 @@ body.night .dn-orb { offset-distance: 100%; }
 .contact-details dd a { text-decoration: none; border-bottom: 1px solid transparent; transition: color .15s, border-color .15s; }
 .contact-details dd a:hover { color: var(--color-red); border-bottom-color: var(--color-red); }
 
-/* the studio strip at the very bottom of the issue */
-.studio {
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center;
-  gap: 22px; text-decoration: none; color: inherit;
-  border: 1.5px solid var(--color-ink); padding: 16px 22px; margin: 0 6px 12px;
-  transition: background .18s, color .18s;
-}
-.studio:hover { background: var(--color-ink); color: var(--color-paper); }
-.studio-mark { font-family: var(--font-serif); font-weight: 700; font-size: 1.625rem; letter-spacing: -0.02em; }
-.studio-tag { font-family: var(--font-serif); font-style: italic; font-size: 0.9375rem; opacity: 0.75; }
-.studio-body { grid-column: 2; grid-row: 2; font-size: 0.7188rem; line-height: 1.55; opacity: 0.8; max-width: 62ch; }
-.studio-go { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; }
 
 @media (max-width: 920px) {
   .contact-body { grid-template-columns: 1fr; gap: 22px; }
   .contact-side { border-left: none; padding-left: 0; border-top: 1.5px solid var(--color-ink); padding-top: 18px; }
   .cf-row { grid-template-columns: 1fr; }
-  .studio { grid-template-columns: 1fr; gap: 8px; }
-  .studio-body { grid-column: 1; grid-row: auto; }
-}
+    }
 
 /* ---- page 3 carries a little colour: a tinted leaf, a green rule, red marks ---- */
 .paper.contact-paper {
@@ -583,10 +579,6 @@ body.night .dn-orb { offset-distance: 100%; }
 .cf-field > span { color: var(--color-green-deep); }
 .cf-actions button { background: var(--color-green-deep); border-color: var(--color-green-deep); }
 .cf-actions button:hover:not(:disabled) { background: var(--color-green); border-color: var(--color-green); }
-.studio { border-color: var(--color-green-deep); }
-.studio:hover { background: var(--color-green-deep); border-color: var(--color-green-deep); }
-.studio-mark { color: var(--color-green-deep); }
-.studio:hover .studio-mark { color: var(--color-paper); }
 
 /* contents strip in the masthead — the three leaves of the issue */
 .pagenav { display: flex; align-items: baseline; gap: 18px; }
@@ -613,8 +605,7 @@ body.night .dn-orb { offset-distance: 100%; }
 
 /* guaranteed breathing room between the correspondence body and the studio strip */
 .contact-body { padding-bottom: 1.1rem; }
-.contact-paper .studio { margin-top: 0; }
-
+.contact-paper 
 /* the engraved hand writes while you type: a small, damped rock at the wrist */
 /* centre the origin: the scaleX(-1) flip would otherwise shift the box sideways
    and push the drawing off the sheet */
@@ -631,5 +622,23 @@ body.night .dn-orb { offset-distance: 100%; }
 
 /* the strip sits on the paper, not over the drawing: opaque, so the hand behind it
    is hidden rather than showing through the frame */
-.contact-paper .studio { background: var(--color-paper); }
-.contact-paper .footstrip { background: var(--color-paper); }
+.contact-paper .contact-paper .footstrip { background: var(--color-paper); }
+
+/* Luminaft sits in the footer now, beside the barcode — a credit line, not a slab */
+.studioline {
+  display: inline-flex; align-items: baseline; gap: 0.85rem;
+  text-decoration: none; color: inherit;
+  border-bottom: 1.5px solid transparent; padding-bottom: 2px;
+  transition: color .15s, border-color .15s;
+}
+.studioline:hover { color: var(--color-green-deep); border-bottom-color: var(--color-green); }
+.studioline-mark {
+  font-family: var(--font-serif); font-weight: 700; font-size: 1.05rem;
+  letter-spacing: -0.01em; text-transform: none; color: var(--color-green-deep);
+}
+.studioline-tag {
+  font-family: var(--font-serif); font-style: italic; font-size: 0.85rem;
+  text-transform: none; opacity: 0.75;
+}
+.studioline-go { font-size: 0.62rem; letter-spacing: 0.14em; opacity: 0.7; }
+@media (max-width: 620px) { .studioline-tag { display: none; } }

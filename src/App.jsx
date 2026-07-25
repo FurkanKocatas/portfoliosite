@@ -261,7 +261,8 @@ function ContactSection({ onGo }) {
         />
 
         <div className="masthead">
-          <span className="brand">{meta.name}<span className="dot">.</span></span>
+          <span className="issueline">{meta.role} · {meta.issue}</span>
+          <span className="brand">{meta.name}</span>
           <PageNav current={2} onGo={onGo} />
         </div>
 
@@ -314,15 +315,12 @@ function ContactSection({ onGo }) {
           </aside>
         </div>
 
-        <a className="studio" href={contact.studio.href} target="_blank" rel="noreferrer">
-          <span className="studio-mark">{contact.studio.name}</span>
-          <span className="studio-tag">{contact.studio.tagline}</span>
-          <span className="studio-body">{contact.studio.body}</span>
-          <span className="studio-go">Visit ↗</span>
-        </a>
-
         <div className="footstrip">
-          <span />
+          <a className="studioline" href={contact.studio.href} target="_blank" rel="noreferrer">
+            <span className="studioline-mark">{contact.studio.name}</span>
+            <span className="studioline-tag">{contact.studio.tagline}</span>
+            <span className="studioline-go">Visit ↗</span>
+          </a>
           <span className="social">
             <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
           </span>
@@ -340,7 +338,8 @@ function AboutPage({ onGo, onContact }) {
         <span className="crop tl" /><span className="crop tr" /><span className="crop bl" /><span className="crop br" />
 
         <div className="masthead">
-          <span className="brand">{meta.name}<span className="dot">.</span></span>
+          <span className="issueline">{meta.role} · {meta.issue}</span>
+          <span className="brand">{meta.name}</span>
           <PageNav current={1} onGo={onGo} />
         </div>
 
@@ -353,9 +352,8 @@ function AboutPage({ onGo, onContact }) {
           <aside className="about-side">
             <figure className="about-portrait">
               <img src={`${import.meta.env.BASE_URL}img/portrait.webp`} alt="Engraved portrait of Furkan Kocataş" />
-              <figcaption>fig. — the author</figcaption>
             </figure>
-            <div className="folio"><span>Page 02</span><span>Specimen</span></div>
+            <div className="folio"><span>Page 02 · The author</span><span>Specimen</span></div>
             <dl className="about-specimen">
               {about.specimen.map((s) => (
                 <div key={s.label}>
@@ -485,7 +483,8 @@ export default function App() {
 
           {/* masthead */}
           <motion.div className="masthead" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
-            <span className="brand">{meta.name}<span className="dot">.</span></span>
+            <span className="issueline">{meta.role} · {meta.issue}</span>
+          <span className="brand">{meta.name}</span>
             <PageNav current={0} onGo={goTo} />
           </motion.div>
 
