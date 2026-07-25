@@ -51,38 +51,6 @@ body {
 
 a { color: inherit; }
 
-/* ============================================================
-   LETTERPRESS — type and rules sit *in* the paper, not on it.
-   A hairline light edge below each stroke reads as the debossed
-   bite of a metal plate. No colour shift, no stains.
-   ============================================================ */
-.paper h1, .paper h2, .paper h3, .paper h4,
-.paper .brand, .paper .cardname, .paper .platemark,
-.paper .about-h, .paper .about-lead, .paper .serifline,
-.paper .cta, .paper .kick, .paper .quip {
-  text-shadow: 0 1px 0 rgb(255 253 246 / 0.55);
-}
-/* body copy gets a fainter bite so it stays crisp at small sizes */
-.paper .lead, .paper .blurb, .paper .about-p, .paper .summary,
-.paper .no, .paper .role, .paper .tags, .paper .folio, .paper .masthead {
-  text-shadow: 0 0.5px 0 rgb(255 253 246 / 0.4);
-}
-/* rules, card borders and the plate frames get the same impressed edge */
-.paper .mod, .paper .masthead, .paper .footstrip, .paper .about-side {
-  box-shadow: 0 1px 0 rgb(255 253 246 / 0.5);
-}
-body.night .paper h1, body.night .paper h2, body.night .paper h3, body.night .paper h4,
-body.night .paper .brand, body.night .paper .cardname, body.night .paper .platemark,
-body.night .paper .about-h, body.night .paper .about-lead, body.night .paper .serifline,
-body.night .paper .cta, body.night .paper .kick, body.night .paper .quip,
-body.night .paper .lead, body.night .paper .blurb, body.night .paper .about-p,
-body.night .paper .summary, body.night .paper .no, body.night .paper .role,
-body.night .paper .tags, body.night .paper .folio, body.night .paper .masthead {
-  text-shadow: none; /* the page inversion turns the highlight into a dark halo */
-}
-body.night .paper .mod, body.night .paper .masthead,
-body.night .paper .footstrip, body.night .paper .about-side { box-shadow: none; }
-
 /* floating "token" rings on the cover doodle */
 @keyframes floaty {
   0%, 100% { transform: translateY(0); }
