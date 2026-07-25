@@ -438,9 +438,9 @@ body.night .about-portrait img { filter: invert(1) hue-rotate(180deg); }
 .paper.about, .paper.contact-paper { overflow: hidden; }
 /* the writing hand — it belongs on the page you write from */
 .about-engraving {
-  position: absolute; right: -3%; bottom: -5%;
-  width: min(42%, 30rem); max-width: 600px; height: auto;
-  opacity: 0.3; pointer-events: none; user-select: none; z-index: 0;
+  position: absolute; right: 1%; bottom: 18%;
+  width: min(30%, 20rem); height: auto;
+  opacity: 0.28; pointer-events: none; user-select: none; z-index: 0;
   transform: scaleX(-1); /* quill points up-left, toward the content */
 }
 .paper.about .masthead,
@@ -616,7 +616,9 @@ body.night .dn-orb { offset-distance: 100%; }
 .contact-paper .studio { margin-top: 0; }
 
 /* the engraved hand writes while you type: a small, damped rock at the wrist */
-.about-engraving { transform-origin: 62% 78%; transition: transform 0.5s ease-out; }
+/* centre the origin: the scaleX(-1) flip would otherwise shift the box sideways
+   and push the drawing off the sheet */
+.about-engraving { transform-origin: 50% 50%; transition: transform 0.5s ease-out; }
 @keyframes quill-write {
   0%   { transform: scaleX(-1) rotate(0deg)    translate(0, 0); }
   25%  { transform: scaleX(-1) rotate(-0.7deg) translate(-1.5px, 0.6px); }
@@ -626,3 +628,8 @@ body.night .dn-orb { offset-distance: 100%; }
 }
 .about-engraving.is-writing { animation: quill-write 0.85s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .about-engraving.is-writing { animation: none; } }
+
+/* the strip sits on the paper, not over the drawing: opaque, so the hand behind it
+   is hidden rather than showing through the frame */
+.contact-paper .studio { background: var(--color-paper); }
+.contact-paper .footstrip { background: var(--color-paper); }
