@@ -17,6 +17,14 @@
     <title>Furkan Kocataş — Computer Engineer</title>
   </head>
   <body>
+    <!-- Ink bleed: old type was never crisp — the impression spread into the paper
+         fibre, leaving slightly ragged edges. Applied to display type via CSS. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <filter id="inkbleed" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="3" seed="4" result="fibre" />
+        <feDisplacementMap in="SourceGraphic" in2="fibre" scale="2.1" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
