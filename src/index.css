@@ -234,6 +234,11 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 }
 .footstrip .cta { font-family: var(--font-serif); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; text-transform: none; }
 .footstrip .cta a { text-decoration: none; border-bottom: 3px solid var(--color-green); }
+.cta-link {
+  background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  border-bottom: 3px solid var(--color-green); transition: color .15s;
+}
+.cta-link:hover { color: var(--color-red); }
 .footstrip .social a { text-decoration: none; margin-left: 16px; }
 .footstrip .social a.credit { opacity: 0.5; font-size: 10px; text-transform: none; letter-spacing: 0.02em; }
 .footstrip .social a:hover { color: var(--color-red); }
@@ -307,7 +312,7 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 }
 .detail .content::-webkit-scrollbar { width: 8px; }
 .detail .content::-webkit-scrollbar-thumb { background: rgb(29 27 22 / 0.25); border-radius: 4px; }
-.detail .folio, .about-side .folio {
+.folio {
   display: flex; justify-content: space-between; gap: 12px;
   font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6d675a;
   border-bottom: 1.5px solid var(--color-ink); padding-bottom: 10px; margin-bottom: 18px;
@@ -368,7 +373,13 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 .book { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
 .leaf { position: absolute; inset: 0; transform-origin: center center; }
 .leaf-front { z-index: 1; }
-.leaf-back { z-index: 2; pointer-events: none; will-change: transform, box-shadow; } /* slides up OVER the cover */
+/* page 2 slides up OVER the cover, then scrolls itself: about, then contact */
+.leaf-back {
+  z-index: 2; pointer-events: none; will-change: transform, box-shadow;
+  overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.leaf-back::-webkit-scrollbar { width: 0; height: 0; }
 .book.folded .leaf-back { pointer-events: auto; }
 
 /* page-flip control (About / Back) — sits in the nav / footer */
@@ -456,3 +467,77 @@ body.night .grain::after { mix-blend-mode: screen; opacity: 0.05; }
 body.night .dn-orb { offset-distance: 100%; }
 .backdrop { z-index: 100; }
 @media (max-width: 920px) { .daynight { top: 10px; transform: translateX(-50%) scale(0.82); } }
+
+/* ============================================================
+   PAGE 3 — CORRESPONDENCE (the foot of page 2)
+   ============================================================ */
+.contact-paper { display: grid; grid-template-rows: auto 1fr auto auto; }
+.contact-body {
+  display: grid; grid-template-columns: 1.5fr 1fr; gap: 46px;
+  align-content: center; padding: 8px 6px; min-height: 0;
+}
+.contact-main .about-h { margin-bottom: 12px; }
+.contact-main .about-lead { margin-bottom: 22px; max-width: 40ch; }
+
+.contact-form { display: flex; flex-direction: column; gap: 12px; max-width: 52ch; }
+.cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cf-field { display: flex; flex-direction: column; gap: 5px; }
+.cf-field > span {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: #6d675a;
+}
+.cf-field input, .cf-field textarea {
+  font: inherit; font-size: 13px; color: var(--color-ink);
+  background: rgb(255 255 250 / 0.5);
+  border: 1.5px solid var(--color-ink); border-radius: 0;
+  padding: 9px 11px; outline: none; resize: vertical;
+  transition: border-color .15s, background .15s;
+}
+.cf-field input:focus, .cf-field textarea:focus {
+  border-color: var(--color-green); background: rgb(255 255 250 / 0.9);
+}
+.cf-actions { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
+.cf-actions button {
+  font-family: var(--font-serif); font-weight: 700; font-size: 16px;
+  letter-spacing: -0.01em; color: var(--color-paper); background: var(--color-ink);
+  border: 1.5px solid var(--color-ink); padding: 9px 26px; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.cf-actions button:hover:not(:disabled) { background: var(--color-green); border-color: var(--color-green); }
+.cf-actions button:disabled { opacity: 0.55; cursor: default; }
+.cf-note { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; }
+.cf-note.ok { color: var(--color-green); }
+.cf-note.bad { color: var(--color-red); }
+
+.contact-side { border-left: 1.5px solid var(--color-ink); padding-left: 28px; display: flex; flex-direction: column; justify-content: center; }
+.contact-details { margin: 0; }
+.contact-details > div { padding: 11px 0; border-bottom: 1px solid rgb(29 27 22 / 0.18); }
+.contact-details > div:first-child { border-top: 1px solid rgb(29 27 22 / 0.18); }
+.contact-details dt {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: #6d675a; margin-bottom: 3px;
+}
+.contact-details dd { margin: 0; font-family: var(--font-serif); font-size: 17px; }
+.contact-details dd a { text-decoration: none; border-bottom: 1px solid transparent; transition: color .15s, border-color .15s; }
+.contact-details dd a:hover { color: var(--color-red); border-bottom-color: var(--color-red); }
+
+/* the studio strip at the very bottom of the issue */
+.studio {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+  gap: 22px; text-decoration: none; color: inherit;
+  border: 1.5px solid var(--color-ink); padding: 16px 22px; margin: 0 6px 12px;
+  transition: background .18s, color .18s;
+}
+.studio:hover { background: var(--color-ink); color: var(--color-paper); }
+.studio-mark { font-family: var(--font-serif); font-weight: 700; font-size: 26px; letter-spacing: -0.02em; }
+.studio-tag { font-family: var(--font-serif); font-style: italic; font-size: 15px; opacity: 0.75; }
+.studio-body { grid-column: 2; grid-row: 2; font-size: 11.5px; line-height: 1.55; opacity: 0.8; max-width: 62ch; }
+.studio-go { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
+
+@media (max-width: 920px) {
+  .contact-body { grid-template-columns: 1fr; gap: 22px; }
+  .contact-side { border-left: none; padding-left: 0; border-top: 1.5px solid var(--color-ink); padding-top: 18px; }
+  .cf-row { grid-template-columns: 1fr; }
+  .studio { grid-template-columns: 1fr; gap: 8px; }
+  .studio-body { grid-column: 1; grid-row: auto; }
+}

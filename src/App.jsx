@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
-import { meta, projects, about } from './data.js'
+import { meta, projects, about, contact } from './data.js'
 import Illustration from './Illustration.jsx'
 import OwlHero from './OwlHero.jsx'
 
@@ -142,8 +142,119 @@ function DayNightArch({ onToggle, onSet }) {
   )
 }
 
+// The foot of page 2 — where people can actually write.
+function ContactSection() {
+  const [state, setState] = useState('idle') // idle | sending | sent | error
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    const form = e.currentTarget
+    const data = Object.fromEntries(new FormData(form))
+
+    // Without a form endpoint a static page cannot deliver mail itself, so hand
+    // the composed message to the visitor's mail client instead of failing.
+    if (!contact.accessKey) {
+      const body = `${data.message}\n\n— ${data.name} (${data.email})`
+      window.location.href =
+        `mailto:${meta.email}?subject=${encodeURIComponent(data.subject || 'Hello from your site')}&body=${encodeURIComponent(body)}`
+      return
+    }
+
+    setState('sending')
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ access_key: contact.accessKey, ...data }),
+      })
+      if (!res.ok) throw new Error(String(res.status))
+      setState('sent')
+      form.reset()
+    } catch {
+      setState('error')
+    }
+  }
+
+  return (
+    <div className="sheet" id="contact">
+      <div className="paper contact-paper">
+        <span className="crop tl" /><span className="crop tr" /><span className="crop bl" /><span className="crop br" />
+
+        <div className="masthead">
+          <span className="brand">{meta.name}<span className="dot">.</span></span>
+          <span className="mid">Page 03 · Correspondence</span>
+          <nav><a href={`mailto:${meta.email}`}>{meta.email}</a></nav>
+        </div>
+
+        <div className="contact-body">
+          <div className="contact-main">
+            <h1 className="about-h">{contact.heading}</h1>
+            <p className="about-lead">{contact.lead}</p>
+
+            <form className="contact-form" onSubmit={onSubmit}>
+              <div className="cf-row">
+                <label className="cf-field">
+                  <span>Name</span>
+                  <input name="name" type="text" required autoComplete="name" />
+                </label>
+                <label className="cf-field">
+                  <span>Email</span>
+                  <input name="email" type="email" required autoComplete="email" />
+                </label>
+              </div>
+              <label className="cf-field">
+                <span>Subject</span>
+                <input name="subject" type="text" />
+              </label>
+              <label className="cf-field">
+                <span>Message</span>
+                <textarea name="message" rows="4" required />
+              </label>
+              <div className="cf-actions">
+                <button type="submit" disabled={state === 'sending'}>
+                  {state === 'sending' ? 'Sending…' : 'Send'}
+                </button>
+                {state === 'sent' && <span className="cf-note ok">Thank you — I'll be in touch.</span>}
+                {state === 'error' && (
+                  <span className="cf-note bad">That didn't go through. Write to {meta.email} instead.</span>
+                )}
+              </div>
+            </form>
+          </div>
+
+          <aside className="contact-side">
+            <div className="folio"><span>Page 03</span><span>Details</span></div>
+            <dl className="contact-details">
+              {contact.details.map((d) => (
+                <div key={d.label}>
+                  <dt>{d.label}</dt>
+                  <dd>{d.href ? <a href={d.href} target="_blank" rel="noreferrer">{d.value}</a> : d.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </aside>
+        </div>
+
+        <a className="studio" href={contact.studio.href} target="_blank" rel="noreferrer">
+          <span className="studio-mark">{contact.studio.name}</span>
+          <span className="studio-tag">{contact.studio.tagline}</span>
+          <span className="studio-body">{contact.studio.body}</span>
+          <span className="studio-go">Visit ↗</span>
+        </a>
+
+        <div className="footstrip">
+          <span className="cta">© {new Date().getFullYear()} {meta.name}</span>
+          <span className="social">
+            <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Page 2 — the "about" spread revealed by folding the cover down.
-function AboutPage({ onBack }) {
+function AboutPage({ onBack, onContact }) {
   return (
     <div className="sheet">
       <div className="paper about">
@@ -179,7 +290,7 @@ function AboutPage({ onBack }) {
         </div>
 
         <div className="footstrip">
-          <span className="cta">Have something worth building? <a href={`mailto:${meta.email}`}>Write to me.</a></span>
+          <span className="cta">Have something worth building? <button className="cta-link" onClick={onContact}>Write to me.</button></span>
           <span className="social">
             <button className="pageflip" onClick={onBack}>Back to the cover ⌃</button>
             <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
@@ -222,12 +333,14 @@ export default function App() {
   const [folded, setFolded] = useState(false)
   const animRef = useRef(null)
   const wheelLock = useRef(false)
+  const backRef = useRef(null)
 
   useEffect(() => fold.on('change', (v) => setFolded(v > 0.5)), [fold])
 
   // one decisive scroll (or a button) turns the whole page; momentum wheel events
   // during the animation are locked out so it never over-shoots or double-turns.
-  const foldTo = (v) => {
+  const foldTo = (v, { resetScroll = true } = {}) => {
+    if (resetScroll && backRef.current) backRef.current.scrollTop = 0
     wheelLock.current = true
     animRef.current?.stop()
     animRef.current = animate(fold, v, {
@@ -237,18 +350,38 @@ export default function App() {
     setTimeout(() => { wheelLock.current = false }, 750) // safety unlock
   }
 
+  // "Write to me" from either page: turn to page 2 if needed, then run down to the
+  // contact section at its foot.
+  const goToContact = () => {
+    const scroll = () => backRef.current?.querySelector('#contact')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (fold.get() > 0.5) { scroll(); return }
+    foldTo(1)
+    setTimeout(scroll, 260)
+  }
+
   useEffect(() => {
     const el = bookRef.current
     if (!el) return
     const onWheel = (e) => {
       if (window.innerWidth <= 920 || active) return // mobile scrolls; don't fold behind a detail
-      e.preventDefault()
-      if (wheelLock.current) return
       const dir = e.deltaY > 6 ? 1 : e.deltaY < -6 ? -1 : 0
       if (!dir) return
-      const cur = fold.get()
-      if (dir > 0 && cur < 0.5) foldTo(1)      // scroll down on the cover → about
-      else if (dir < 0 && cur > 0.5) foldTo(0) // scroll up on the about page → cover
+
+      // On page 2 the leaf scrolls itself (about → contact). Only a scroll up while
+      // already at its top turns back to the cover.
+      if (fold.get() > 0.5) {
+        const back = backRef.current
+        if (dir < 0 && back && back.scrollTop <= 4) {
+          e.preventDefault()
+          if (!wheelLock.current) foldTo(0)
+        }
+        return // otherwise let the leaf scroll natively
+      }
+
+      e.preventDefault()
+      if (wheelLock.current) return
+      if (dir > 0) foldTo(1) // scroll down on the cover → about
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
@@ -259,9 +392,11 @@ export default function App() {
       {NIGHT_MODE_ENABLED && <DayNightArch onToggle={toggleNight} onSet={setNight} />}
       <div ref={bookRef} className={`book ${folded ? 'folded' : ''}`}>
 
-        {/* PAGE 2 — slides up from the bottom, OVER the cover, with a top-edge drop shadow */}
-        <motion.div className="leaf leaf-back" aria-hidden={!folded} style={{ y: aboutY, boxShadow: aboutShadow }}>
-          <AboutPage onBack={() => foldTo(0)} />
+        {/* PAGE 2 — slides up from the bottom, OVER the cover, with a top-edge drop shadow.
+            It scrolls internally: the about spread, then the contact section. */}
+        <motion.div ref={backRef} className="leaf leaf-back" aria-hidden={!folded} style={{ y: aboutY, boxShadow: aboutShadow }}>
+          <AboutPage onBack={() => foldTo(0)} onContact={goToContact} />
+          <ContactSection />
         </motion.div>
 
         {/* PAGE 1 — the cover zooms out + fades away */}
@@ -363,7 +498,7 @@ export default function App() {
 
           {/* footer */}
           <motion.div className="footstrip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}>
-            <span className="cta">Have something worth building? <a href={`mailto:${meta.email}`}>Write to me.</a></span>
+            <span className="cta">Have something worth building? <button className="cta-link" onClick={goToContact}>Write to me.</button></span>
             <span className="social">
               <a href={meta.github} target="_blank" rel="noreferrer">GitHub</a>
               <a href={meta.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>

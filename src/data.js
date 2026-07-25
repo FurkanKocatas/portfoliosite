@@ -23,6 +23,28 @@ export const about = {
   note: 'Set in Fraunces & Courier Prime. Plates are public-domain engravings — Bayer, Kircher, Bewick, Wellcome, Rijksmuseum.',
 }
 
+// Page 2 continues into a contact section.
+export const contact = {
+  heading: 'Write to me.',
+  lead: 'A question, a problem worth solving, or work you think I would enjoy — this reaches me directly.',
+  // Static hosting can't process a form. Paste a Web3Forms access key
+  // (free, no backend: https://web3forms.com) to have submissions delivered to
+  // your inbox. Left empty, the form hands off to the visitor's mail client.
+  accessKey: '',
+  details: [
+    { label: 'Email', value: 'furkankocatas@gmail.com', href: 'mailto:furkankocatas@gmail.com' },
+    { label: 'Based in', value: 'Türkiye — open to remote work' },
+    { label: 'GitHub', value: 'FurkanKocatas', href: 'https://github.com/FurkanKocatas' },
+    { label: 'LinkedIn', value: 'furkan-kocatas', href: 'https://www.linkedin.com/in/furkan-kocatas' },
+  ],
+  studio: {
+    name: 'Luminaft',
+    tagline: 'Engineered to Illuminate.',
+    body: 'For larger builds I work with Luminaft — a collective of computer engineers spanning AI, cloud, embedded and interactive web.',
+    href: 'https://luminaft.com',
+  },
+}
+
 // Every openable project. `illo` picks the SVG in Illustration.jsx.
 export const projects = [
   {
