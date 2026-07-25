@@ -20,14 +20,14 @@ export const about = {
     'The work moves around: firmware on a microcontroller, a Rust app that redraws the Windows desktop, shaders and 3D in the browser, a digital twin for dairy farms, market research that checks its own conclusions, and enterprise platforms that never touch the internet. Different problems, one instinct — take it apart, rebuild it, keep what held.',
     "I'd rather ship something honest than something impressive. The systems I like admit their limits, hold up when no one is watching, and are pleasant to live with. Whatever taught me something, I kept; the rest was practice.",
   ],
-  note: 'Set in Fraunces & Courier Prime. Plates are public-domain engravings — Bayer, Kircher, Bewick, Wellcome, Rijksmuseum.',
-  // The right-hand column of page 2 — a specimen of the toolkit, not a link list
+  // The right-hand column of page 2 — the working toolkit, not a link list
   // (contact lives on page 3 now).
   specimen: [
-    { label: 'Languages', items: 'TypeScript · Python · Rust · C++' },
-    { label: 'Systems', items: 'Postgres · Docker · Linux · ESP32' },
-    { label: 'Interfaces', items: 'React · Three.js · GLSL' },
-    { label: 'Research', items: 'LightGBM · RAG · vector search' },
+    { label: 'Languages', items: 'TypeScript · Python · Rust · C++ · SQL' },
+    { label: 'Frontend', items: 'React · Next.js · Tailwind · Three.js' },
+    { label: 'Backend', items: 'Node · FastAPI · REST · WebSockets' },
+    { label: 'Data', items: 'PostgreSQL · Redis · Prisma · pgvector' },
+    { label: 'Platform', items: 'Docker · Linux · CI/CD · Cloudflare' },
   ],
 }
 
@@ -41,7 +41,6 @@ export const contact = {
   accessKey: '',
   details: [
     { label: 'Email', value: 'furkankocatas@gmail.com', href: 'mailto:furkankocatas@gmail.com' },
-    { label: 'Based in', value: 'Türkiye — open to remote work' },
     { label: 'GitHub', value: 'FurkanKocatas', href: 'https://github.com/FurkanKocatas' },
     { label: 'LinkedIn', value: 'furkan-kocatas', href: 'https://www.linkedin.com/in/furkan-kocatas' },
   ],

@@ -142,8 +142,28 @@ function DayNightArch({ onToggle, onSet }) {
   )
 }
 
+// Contents strip — the three leaves of the issue, on every masthead.
+const PAGES = ['Cover', 'About', 'Contact']
+function PageNav({ current, onGo }) {
+  return (
+    <nav className="pagenav">
+      {PAGES.map((label, i) => (
+        <button
+          key={label}
+          className={`pagenav-item ${i === current ? 'is-current' : ''}`}
+          onClick={() => onGo(i)}
+          aria-current={i === current ? 'page' : undefined}
+        >
+          <span className="pagenav-no">{String(i + 1).padStart(2, '0')}</span>
+          {label}
+        </button>
+      ))}
+    </nav>
+  )
+}
+
 // The foot of page 2 — where people can actually write.
-function ContactSection({ onBack }) {
+function ContactSection({ onGo }) {
   const [state, setState] = useState('idle') // idle | sending | sent | error
 
   const onSubmit = async (e) => {
@@ -183,8 +203,7 @@ function ContactSection({ onBack }) {
 
         <div className="masthead">
           <span className="brand">{meta.name}<span className="dot">.</span></span>
-          <span className="mid">Page 03 · Correspondence</span>
-          <nav><button className="pageflip" onClick={onBack}>⌃ Back</button></nav>
+          <PageNav current={2} onGo={onGo} />
         </div>
 
         <div className="contact-body">
@@ -244,7 +263,7 @@ function ContactSection({ onBack }) {
         </a>
 
         <div className="footstrip">
-          <span className="cta">© {new Date().getFullYear()} {meta.name}</span>
+          <span />
           <span className="social">
             <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
           </span>
@@ -255,7 +274,7 @@ function ContactSection({ onBack }) {
 }
 
 // Page 2 — the "about" spread revealed by folding the cover down.
-function AboutPage({ onBack, onContact }) {
+function AboutPage({ onGo, onContact }) {
   return (
     <div className="sheet">
       <div className="paper about">
@@ -263,9 +282,7 @@ function AboutPage({ onBack, onContact }) {
 
         <div className="masthead">
           <span className="brand">{meta.name}<span className="dot">.</span></span>
-          <nav>
-            <button className="pageflip" onClick={onBack}>⌃ Cover</button>
-          </nav>
+          <PageNav current={1} onGo={onGo} />
         </div>
 
         <div className="about-body">
@@ -276,7 +293,7 @@ function AboutPage({ onBack, onContact }) {
           </div>
           <aside className="about-side">
             <figure className="about-portrait">
-              <img src={`${import.meta.env.BASE_URL}img/portrait.png`} alt="Engraved portrait of Furkan Kocataş" />
+              <img src={`${import.meta.env.BASE_URL}img/portrait.webp`} alt="Engraved portrait of Furkan Kocataş" />
               <figcaption>fig. — the author</figcaption>
             </figure>
             <div className="folio"><span>Page 02</span><span>Specimen</span></div>
@@ -288,14 +305,13 @@ function AboutPage({ onBack, onContact }) {
                 </div>
               ))}
             </dl>
-            <p className="about-note">{about.note}</p>
           </aside>
         </div>
 
         <div className="footstrip">
           <span className="cta">Have something worth building? <button className="cta-link" onClick={onContact}>Write to me.</button></span>
           <span className="social">
-            <button className="pageflip" onClick={onBack}>Back to the cover ⌃</button>
+            <button className="pageflip" onClick={() => onGo(0)}>Back to the cover ⌃</button>
             <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
           </span>
         </div>
@@ -387,7 +403,7 @@ export default function App() {
           aria-hidden={stage !== 2}
           style={{ y: contactY, boxShadow: contactShadow, pointerEvents: stage === 2 ? 'auto' : 'none' }}
         >
-          <ContactSection onBack={() => goTo(1)} />
+          <ContactSection onGo={goTo} />
         </motion.div>
 
         {/* PAGE 2 — about, rises over the cover, then leaves the same way */}
@@ -396,7 +412,7 @@ export default function App() {
           aria-hidden={stage !== 1}
           style={{ y: aboutY, scale: aboutScale, opacity: aboutOpacity, boxShadow: aboutShadow, pointerEvents: stage === 1 ? 'auto' : 'none' }}
         >
-          <AboutPage onBack={() => goTo(0)} onContact={goToContact} />
+          <AboutPage onGo={goTo} onContact={goToContact} />
         </motion.div>
 
         {/* PAGE 1 — the cover zooms out + fades away */}
@@ -412,11 +428,7 @@ export default function App() {
           {/* masthead */}
           <motion.div className="masthead" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
             <span className="brand">{meta.name}<span className="dot">.</span></span>
-            <nav>
-              <a href={`mailto:${meta.email}`}>Email</a>
-              <a href={meta.github} target="_blank" rel="noreferrer">GitHub</a>
-              <button className="pageflip" onClick={() => foldTo(1)}>About ⌄</button>
-            </nav>
+            <PageNav current={0} onGo={goTo} />
           </motion.div>
 
           {/* grid */}
