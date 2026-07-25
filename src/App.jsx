@@ -165,6 +165,10 @@ function AboutPage({ onBack }) {
             {about.body.map((t) => <p className="about-p" key={t}>{t}</p>)}
           </div>
           <aside className="about-side">
+            <figure className="about-portrait">
+              <img src={`${import.meta.env.BASE_URL}img/Portrait.jpeg`} alt="Engraved portrait of Furkan Kocataş" />
+              <figcaption>fig. — the author</figcaption>
+            </figure>
             <div className="folio"><span>Page 02</span><span>Find me</span></div>
             <ul className="about-links">
               <li><a href={meta.linkedin} target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a></li>
