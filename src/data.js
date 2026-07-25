@@ -5,6 +5,7 @@ export const meta = {
   role: 'Computer Engineer — AI Systems',
   location: 'Türkiye',
   issue: 'Issue 01 · 2026',
+  site: 'https://furkankocatas.com',
   email: 'work.furkankocatas@gmail.com',
   github: 'https://github.com/FurkanKocatas',
   linkedin: 'https://www.linkedin.com/in/furkan-kocatas',
@@ -35,10 +36,11 @@ export const about = {
 export const contact = {
   heading: 'Write to me', // the full stop is added in CSS, in red
   lead: 'A question, a problem worth solving, or work you think I would enjoy — this reaches me directly.',
-  // Static hosting can't process a form. Paste a Web3Forms access key
-  // (free, no backend: https://web3forms.com) to have submissions delivered to
-  // your inbox. Left empty, the form hands off to the visitor's mail client.
-  accessKey: '',
+  // Static hosting can't process a form, so submissions go through Web3Forms
+  // (https://web3forms.com), which relays them to meta.email. This key is public
+  // by design — it only permits posting to that one inbox. Emptied, the form falls
+  // back to handing the message to the visitor's mail client.
+  accessKey: 'fbdd71b5-200e-4bd9-85ae-a8d6775bd0b0',
   details: [
     { label: 'Email', value: 'work.furkankocatas@gmail.com', href: 'mailto:work.furkankocatas@gmail.com' },
     { label: 'GitHub', value: 'FurkanKocatas', href: 'https://github.com/FurkanKocatas' },
