@@ -143,7 +143,7 @@ function DayNightArch({ onToggle, onSet }) {
 }
 
 // The foot of page 2 — where people can actually write.
-function ContactSection() {
+function ContactSection({ onBack }) {
   const [state, setState] = useState('idle') // idle | sending | sent | error
 
   const onSubmit = async (e) => {
@@ -184,7 +184,7 @@ function ContactSection() {
         <div className="masthead">
           <span className="brand">{meta.name}<span className="dot">.</span></span>
           <span className="mid">Page 03 · Correspondence</span>
-          <nav><a href={`mailto:${meta.email}`}>{meta.email}</a></nav>
+          <nav><button className="pageflip" onClick={onBack}>⌃ Back</button></nav>
         </div>
 
         <div className="contact-body">
@@ -320,92 +320,89 @@ export default function App() {
   }, [NIGHT_MODE_ENABLED, night])
   const toggleNight = () => setNight((n) => !n)
 
-  // ── page fold: the cover turns around its spine to reveal the about page ──
-  // fold 0 = cover, 1 = folded away (about shown). Scrubbed by wheel, or driven by the buttons.
+  // ── the issue turns page by page ──
+  // page 0 = cover, 1 = about, 2 = correspondence. Every turn is the same gesture:
+  // the leaf you are leaving zooms out and fades, the next slides up over it.
   const bookRef = useRef(null)
-  const fold = useMotionValue(0)
-  // The cover zooms out + fades away while the about page slides up from the bottom (over it),
-  // casting a drop shadow from its leading (top) edge as it rises.
-  const coverScale = useTransform(fold, [0, 1], [1, 0.58]) // dramatic zoom-out
-  const coverOpacity = useTransform(fold, [0, 0.85], [1, 0])
-  const aboutY = useTransform(fold, [0, 1], ['100%', '0%'])
-  const aboutShadow = useTransform(
-    fold, [0, 0.08],
-    ['0px -14px 40px -14px rgba(12,9,6,0)', '0px -14px 40px -14px rgba(12,9,6,0.42)']
-  )
-  const [folded, setFolded] = useState(false)
+  const page = useMotionValue(0)
+  const [stage, setStage] = useState(0)
   const animRef = useRef(null)
   const wheelLock = useRef(false)
-  const backRef = useRef(null)
 
-  useEffect(() => fold.on('change', (v) => setFolded(v > 0.5)), [fold])
+  const RISE = ['100%', '0%']
+  const SHADOW = ['0px -14px 40px -14px rgba(12,9,6,0)', '0px -14px 40px -14px rgba(12,9,6,0.42)']
 
-  // one decisive scroll (or a button) turns the whole page; momentum wheel events
+  // leaf 0 — the cover: only ever leaves
+  const coverScale = useTransform(page, [0, 1], [1, 0.58])
+  const coverOpacity = useTransform(page, [0, 0.85], [1, 0])
+  // leaf 1 — about: rises over the cover, then leaves the same way the cover did
+  const aboutY = useTransform(page, [0, 1], RISE)
+  const aboutShadow = useTransform(page, [0, 0.08], SHADOW)
+  const aboutScale = useTransform(page, [1, 2], [1, 0.58])
+  const aboutOpacity = useTransform(page, [1, 1.85], [1, 0])
+  // leaf 2 — correspondence: rises over about
+  const contactY = useTransform(page, [1, 2], RISE)
+  const contactShadow = useTransform(page, [1, 1.08], SHADOW)
+
+  useEffect(() => page.on('change', (v) => setStage(Math.round(v))), [page])
+
+  // one decisive scroll (or a button) turns a whole page; momentum wheel events
   // during the animation are locked out so it never over-shoots or double-turns.
-  const foldTo = (v, { resetScroll = true } = {}) => {
-    if (resetScroll && backRef.current) backRef.current.scrollTop = 0
+  const goTo = (v) => {
     wheelLock.current = true
     animRef.current?.stop()
-    animRef.current = animate(fold, v, {
+    animRef.current = animate(page, v, {
       type: 'spring', stiffness: 100, damping: 20,
       onComplete: () => { wheelLock.current = false },
     })
     setTimeout(() => { wheelLock.current = false }, 750) // safety unlock
   }
-
-  // "Write to me" from either page: turn to page 2 if needed, then run down to the
-  // contact section at its foot.
-  const goToContact = () => {
-    const scroll = () => backRef.current?.querySelector('#contact')
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    if (fold.get() > 0.5) { scroll(); return }
-    foldTo(1)
-    setTimeout(scroll, 260)
-  }
+  const goToContact = () => goTo(2)
 
   useEffect(() => {
     const el = bookRef.current
     if (!el) return
     const onWheel = (e) => {
-      if (window.innerWidth <= 920 || active) return // mobile scrolls; don't fold behind a detail
-      const dir = e.deltaY > 6 ? 1 : e.deltaY < -6 ? -1 : 0
-      if (!dir) return
-
-      // On page 2 the leaf scrolls itself (about → contact). Only a scroll up while
-      // already at its top turns back to the cover.
-      if (fold.get() > 0.5) {
-        const back = backRef.current
-        if (dir < 0 && back && back.scrollTop <= 4) {
-          e.preventDefault()
-          if (!wheelLock.current) foldTo(0)
-        }
-        return // otherwise let the leaf scroll natively
-      }
-
+      if (window.innerWidth <= 920 || active) return // mobile scrolls; don't turn behind a detail
       e.preventDefault()
       if (wheelLock.current) return
-      if (dir > 0) foldTo(1) // scroll down on the cover → about
+      const dir = e.deltaY > 6 ? 1 : e.deltaY < -6 ? -1 : 0
+      if (!dir) return
+      const cur = Math.round(page.get())
+      const next = Math.min(2, Math.max(0, cur + dir))
+      if (next !== cur) goTo(next)
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
-  }, [fold, active])
+  }, [page, active])
 
   return (
     <div className="grain">
       {NIGHT_MODE_ENABLED && <DayNightArch onToggle={toggleNight} onSet={setNight} />}
-      <div ref={bookRef} className={`book ${folded ? 'folded' : ''}`}>
+      <div ref={bookRef} className="book">
 
-        {/* PAGE 2 — slides up from the bottom, OVER the cover, with a top-edge drop shadow.
-            It scrolls internally: the about spread, then the contact section. */}
-        <motion.div ref={backRef} className="leaf leaf-back" aria-hidden={!folded} style={{ y: aboutY, boxShadow: aboutShadow }}>
-          <AboutPage onBack={() => foldTo(0)} onContact={goToContact} />
-          <ContactSection />
+        {/* PAGE 3 — correspondence, rises over the about page */}
+        <motion.div
+          className="leaf leaf-3"
+          aria-hidden={stage !== 2}
+          style={{ y: contactY, boxShadow: contactShadow, pointerEvents: stage === 2 ? 'auto' : 'none' }}
+        >
+          <ContactSection onBack={() => goTo(1)} />
+        </motion.div>
+
+        {/* PAGE 2 — about, rises over the cover, then leaves the same way */}
+        <motion.div
+          className="leaf leaf-back"
+          aria-hidden={stage !== 1}
+          style={{ y: aboutY, scale: aboutScale, opacity: aboutOpacity, boxShadow: aboutShadow, pointerEvents: stage === 1 ? 'auto' : 'none' }}
+        >
+          <AboutPage onBack={() => goTo(0)} onContact={goToContact} />
         </motion.div>
 
         {/* PAGE 1 — the cover zooms out + fades away */}
         <motion.div
           className="leaf leaf-front"
-          style={{ scale: coverScale, opacity: coverOpacity, pointerEvents: folded ? 'none' : 'auto' }}
+          style={{ scale: coverScale, opacity: coverOpacity, pointerEvents: stage === 0 ? 'auto' : 'none' }}
         >
         <div className="sheet">
         <div className="paper">

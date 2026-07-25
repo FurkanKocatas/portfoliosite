@@ -373,14 +373,9 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 .book { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
 .leaf { position: absolute; inset: 0; transform-origin: center center; }
 .leaf-front { z-index: 1; }
-/* page 2 slides up OVER the cover, then scrolls itself: about, then contact */
-.leaf-back {
-  z-index: 2; pointer-events: none; will-change: transform, box-shadow;
-  overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-  scrollbar-width: none;
-}
-.leaf-back::-webkit-scrollbar { width: 0; height: 0; }
-.book.folded .leaf-back { pointer-events: auto; }
+/* each leaf slides up OVER the one before it; pointer-events are set per stage in JS */
+.leaf-back { z-index: 2; will-change: transform, box-shadow, opacity; }
+.leaf-3 { z-index: 3; will-change: transform, box-shadow; }
 
 /* page-flip control (About / Back) — sits in the nav / footer */
 .pageflip {
