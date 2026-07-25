@@ -13,14 +13,14 @@ export const meta = {
 
 // Page 2 — the "about" spread you fold down to. Plain text; edit freely.
 export const about = {
-  kicker: 'Colophon · The Engineer',
-  heading: 'Behind the issue.',
-  lead: 'Furkan Kocataş — computer engineer, based in Türkiye, building AI systems.',
+  kicker: null,
+  heading: 'The long answer.',
+  lead: 'Furkan Kocataş — computer engineer in Türkiye. I understand things by building them.',
   body: [
-    'I work across the whole stack: air-gapped, fully-offline enterprise AI platforms; quantitative research tools; Rust desktop apps; and the occasional playful web toy.',
-    'I like systems that are honest — they report when there is no edge — private by design, and a little bit delightful. I ship things, run them, and keep whatever taught me something worth keeping.',
+    'The work moves around: firmware on a microcontroller, a Rust app that redraws the Windows desktop, shaders and 3D in the browser, a digital twin for dairy farms, market research that checks its own conclusions, and enterprise platforms that never touch the internet. Different problems, one instinct — take it apart, rebuild it, keep what held.',
+    "I'd rather ship something honest than something impressive. The systems I like admit their limits, hold up when no one is watching, and are pleasant to live with. Whatever taught me something, I kept; the rest was practice.",
   ],
-  note: 'Set in Fraunces & Courier Prime. Plates are public-domain engravings (Wellcome, Rijksmuseum, Bewick, Kircher).',
+  note: 'Set in Fraunces & Courier Prime. Plates are public-domain engravings — Bayer, Kircher, Bewick, Wellcome, Rijksmuseum.',
 }
 
 // Every openable project. `illo` picks the SVG in Illustration.jsx.

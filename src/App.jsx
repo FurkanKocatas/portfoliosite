@@ -159,7 +159,6 @@ function AboutPage({ onBack }) {
 
         <div className="about-body">
           <div className="about-main">
-            <div className="kick">{about.kicker}</div>
             <h1 className="about-h">{about.heading}</h1>
             <p className="about-lead">{about.lead}</p>
             {about.body.map((t) => <p className="about-p" key={t}>{t}</p>)}
@@ -290,9 +289,8 @@ export default function App() {
             {/* hero */}
             <motion.div className="mod hero" variants={riseItem}>
               <div>
-                <div className="kick">Portfolio · Selected Works</div>
                 <h1>Everything here began as a <em>question</em>. Some of them <em>answered back</em>.</h1>
-                <p className="lead">Air-gapped AI platforms, quant research, Rust desktop apps and playful web toys. Everything here shipped, runs, or taught me something worth keeping.</p>
+                <p className="lead">Firmware on a microcontroller, a Rust app that redraws your desktop, market research that argues with itself, a globe you can listen to. Everything here shipped, runs, or taught me something worth keeping.</p>
               </div>
               <div className="doodlewrap"><OwlHero /></div>
               <div className="quip">// {meta.quip}<span className="cursor" /></div>
