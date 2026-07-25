@@ -166,7 +166,7 @@ function AboutPage({ onBack }) {
           </div>
           <aside className="about-side">
             <figure className="about-portrait">
-              <img src={`${import.meta.env.BASE_URL}img/Portrait.jpeg`} alt="Engraved portrait of Furkan Kocataş" />
+              <img src={`${import.meta.env.BASE_URL}img/portrait.png`} alt="Engraved portrait of Furkan Kocataş" />
               <figcaption>fig. — the author</figcaption>
             </figure>
             <div className="folio"><span>Page 02</span><span>Find me</span></div>

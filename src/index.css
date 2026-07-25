@@ -367,11 +367,11 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 .about-portrait { margin: 0 0 20px; }
 .about-portrait img {
   display: block; width: 100%; max-width: 208px; height: auto;
-  /* neutralise the warm ground, clip highlights to white, then multiply so white
-     becomes paper — the rectangular photo edge disappears into the page */
-  filter: grayscale(1) brightness(1.06) contrast(1.18);
-  mix-blend-mode: multiply;
+  /* already a transparent single-ink PNG (tools/engrave.py) — no blend tricks needed */
 }
+/* the page-level night filter would turn the portrait into a photo negative
+   (white hair, dark face); pre-invert it so it lands as white ink on black paper */
+body.night .about-portrait img { filter: invert(1) hue-rotate(180deg); }
 .about-portrait figcaption {
   font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
   text-transform: uppercase; color: #6a655a; margin-top: 7px;
