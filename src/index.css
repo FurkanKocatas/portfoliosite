@@ -82,7 +82,31 @@ a { color: inherit; }
   grid-template-rows: auto 1fr auto;
   padding: 18px 22px;
   position: relative;
+  /* the leaf has thickness and lifts off the board it is bound to */
+  box-shadow:
+    0 1px 0 rgb(255 255 250 / 0.9),
+    0 10px 24px -12px rgb(58 46 28 / 0.28);
 }
+/* gutter: the page curves down into the binding on the left, so light falls away
+   there. A hairline highlight marks the crest where the sheet lifts again. */
+.paper::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 96px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(96 78 48 / 0.26) 0%, rgb(96 78 48 / 0.10) 45%, transparent 100%),
+    linear-gradient(90deg, transparent 0 92px, rgb(255 255 250 / 0.85) 92px 94px, transparent 94px);
+}
+.paper > * { position: relative; z-index: 1; }
+/* the page-level inversion would flip the gutter into a glow — feed it a light
+   gradient at night so it still lands as shadow */
+body.night .paper::before {
+  background: linear-gradient(90deg, rgb(214 202 176 / 0.26) 0%, rgb(214 202 176 / 0.09) 48%, transparent 100%);
+}
+@media (max-width: 920px) { .paper::before { width: 44px; background: linear-gradient(90deg, rgb(96 78 48 / 0.18), transparent); } }
 
 /* print registration / crop marks in the paper corners */
 .crop { position: absolute; width: 13px; height: 13px; pointer-events: none; opacity: 0.55; z-index: 3; }
