@@ -179,6 +179,7 @@ function ContactSection() {
     <div className="sheet" id="contact">
       <div className="paper contact-paper">
         <span className="crop tl" /><span className="crop tr" /><span className="crop bl" /><span className="crop br" />
+        <img className="about-engraving" src={`${import.meta.env.BASE_URL}plates/quill.webp`} alt="" aria-hidden="true" />
 
         <div className="masthead">
           <span className="brand">{meta.name}<span className="dot">.</span></span>
@@ -259,7 +260,6 @@ function AboutPage({ onBack, onContact }) {
     <div className="sheet">
       <div className="paper about">
         <span className="crop tl" /><span className="crop tr" /><span className="crop bl" /><span className="crop br" />
-        <img className="about-engraving" src={`${import.meta.env.BASE_URL}plates/quill.webp`} alt="" aria-hidden="true" />
 
         <div className="masthead">
           <span className="brand">{meta.name}<span className="dot">.</span></span>
@@ -279,12 +279,15 @@ function AboutPage({ onBack, onContact }) {
               <img src={`${import.meta.env.BASE_URL}img/portrait.png`} alt="Engraved portrait of Furkan Kocataş" />
               <figcaption>fig. — the author</figcaption>
             </figure>
-            <div className="folio"><span>Page 02</span><span>Find me</span></div>
-            <ul className="about-links">
-              <li><a href={meta.linkedin} target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a></li>
-              <li><a href={meta.github} target="_blank" rel="noreferrer">GitHub <span>↗</span></a></li>
-              <li><a href={`mailto:${meta.email}`}>Email <span>↗</span></a></li>
-            </ul>
+            <div className="folio"><span>Page 02</span><span>Specimen</span></div>
+            <dl className="about-specimen">
+              {about.specimen.map((s) => (
+                <div key={s.label}>
+                  <dt>{s.label}</dt>
+                  <dd>{s.items}</dd>
+                </div>
+              ))}
+            </dl>
             <p className="about-note">{about.note}</p>
           </aside>
         </div>

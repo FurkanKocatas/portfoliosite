@@ -428,17 +428,32 @@ body.night .about-portrait img { filter: invert(1) hue-rotate(180deg); }
 }
 
 /* colophon engraving on the about page — a faint hand-with-quill watermark */
-.paper.about { overflow: hidden; }
+.paper.about, .paper.contact-paper { overflow: hidden; }
+/* the writing hand — it belongs on the page you write from */
 .about-engraving {
   position: absolute; right: -3%; bottom: -5%;
-  width: 46%; max-width: 640px; height: auto;
-  opacity: 0.38; pointer-events: none; user-select: none; z-index: 0;
+  width: 42%; max-width: 600px; height: auto;
+  opacity: 0.3; pointer-events: none; user-select: none; z-index: 0;
   transform: scaleX(-1); /* quill points up-left, toward the content */
 }
 .paper.about .masthead,
 .paper.about .about-body,
-.paper.about .footstrip { position: relative; z-index: 1; }
-@media (max-width: 920px) { .about-engraving { width: 62%; opacity: 0.24; } }
+.paper.about .footstrip,
+.paper.contact-paper .masthead,
+.paper.contact-paper .contact-body,
+.paper.contact-paper .studio,
+.paper.contact-paper .footstrip { position: relative; z-index: 1; }
+@media (max-width: 920px) { .about-engraving { width: 62%; opacity: 0.2; } }
+
+/* page 2 sidebar — a specimen of the toolkit */
+.about-specimen { margin: 0 0 20px; }
+.about-specimen > div { padding: 9px 0; border-bottom: 1px solid rgb(29 27 22 / 0.16); }
+.about-specimen > div:first-child { border-top: 1px solid rgb(29 27 22 / 0.16); }
+.about-specimen dt {
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--color-red); margin-bottom: 3px;
+}
+.about-specimen dd { margin: 0; font-size: 12px; line-height: 1.5; color: #3a352d; }
 
 /* ============================================================
    NIGHT MODE — full colour inversion (white drawings on black paper)
@@ -541,3 +556,25 @@ body.night .dn-orb { offset-distance: 100%; }
   .studio { grid-template-columns: 1fr; gap: 8px; }
   .studio-body { grid-column: 1; grid-row: auto; }
 }
+
+/* ---- page 3 carries a little colour: a tinted leaf, a green rule, red marks ---- */
+.paper.contact-paper {
+  background:
+    linear-gradient(180deg, rgb(226 234 219 / 0.55) 0%, rgb(226 234 219 / 0) 38%),
+    var(--color-paper);
+}
+.contact-paper .masthead { border-bottom-color: var(--color-green); }
+.contact-paper .about-h { color: var(--color-green-deep); }
+.contact-paper .about-lead { color: #3a352d; }
+.contact-main .about-h::after {
+  content: '.'; color: var(--color-red);
+}
+.contact-side .folio { color: var(--color-green-deep); border-bottom-color: var(--color-green); }
+.contact-details dt { color: var(--color-red); }
+.cf-field > span { color: var(--color-green-deep); }
+.cf-actions button { background: var(--color-green-deep); border-color: var(--color-green-deep); }
+.cf-actions button:hover:not(:disabled) { background: var(--color-green); border-color: var(--color-green); }
+.studio { border-color: var(--color-green-deep); }
+.studio:hover { background: var(--color-green-deep); border-color: var(--color-green-deep); }
+.studio-mark { color: var(--color-green-deep); }
+.studio:hover .studio-mark { color: var(--color-paper); }

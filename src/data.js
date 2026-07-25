@@ -21,11 +21,19 @@ export const about = {
     "I'd rather ship something honest than something impressive. The systems I like admit their limits, hold up when no one is watching, and are pleasant to live with. Whatever taught me something, I kept; the rest was practice.",
   ],
   note: 'Set in Fraunces & Courier Prime. Plates are public-domain engravings — Bayer, Kircher, Bewick, Wellcome, Rijksmuseum.',
+  // The right-hand column of page 2 — a specimen of the toolkit, not a link list
+  // (contact lives on page 3 now).
+  specimen: [
+    { label: 'Languages', items: 'TypeScript · Python · Rust · C++' },
+    { label: 'Systems', items: 'Postgres · Docker · Linux · ESP32' },
+    { label: 'Interfaces', items: 'React · Three.js · GLSL' },
+    { label: 'Research', items: 'LightGBM · RAG · vector search' },
+  ],
 }
 
 // Page 2 continues into a contact section.
 export const contact = {
-  heading: 'Write to me.',
+  heading: 'Write to me', // the full stop is added in CSS, in red
   lead: 'A question, a problem worth solving, or work you think I would enjoy — this reaches me directly.',
   // Static hosting can't process a form. Paste a Web3Forms access key
   // (free, no backend: https://web3forms.com) to have submissions delivered to
