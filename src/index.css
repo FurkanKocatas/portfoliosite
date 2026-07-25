@@ -60,31 +60,16 @@ a { color: inherit; }
 .paper .brand, .paper .cardname, .paper .platemark,
 .paper .about-h, .paper .about-lead, .paper .serifline,
 .paper .cta, .paper .kick, .paper .quip {
-  /* dark rim above = the wall of the impression, bright rim below = its lit lower lip */
-  text-shadow:
-    0 -1px 1px rgb(92 74 46 / 0.30),
-    0 2px 0 rgb(255 255 250 / 0.95),
-    0 3px 2px rgb(92 74 46 / 0.14);
+  text-shadow: 0 1px 0 rgb(255 253 246 / 0.55);
 }
-/* display type also takes the ink bleed — ragged edges where the impression spread
-   into the fibre. Only the big sizes: small text must stay legible. */
-.paper h1, .paper .brand, .paper .cardname, .paper .platemark,
-.paper .about-h, .paper .serifline, .paper .cta {
-  filter: url(#inkbleed);
-}
-/* body copy gets a shallower press so it stays crisp at small sizes */
+/* body copy gets a fainter bite so it stays crisp at small sizes */
 .paper .lead, .paper .blurb, .paper .about-p, .paper .summary,
 .paper .no, .paper .role, .paper .tags, .paper .folio, .paper .masthead {
-  text-shadow:
-    0 -0.5px 0.5px rgb(92 74 46 / 0.22),
-    0 1px 0 rgb(255 255 250 / 0.85);
+  text-shadow: 0 0.5px 0 rgb(255 253 246 / 0.4);
 }
-/* rules, card borders and the plate frames sit in the same impression */
+/* rules, card borders and the plate frames get the same impressed edge */
 .paper .mod, .paper .masthead, .paper .footstrip, .paper .about-side {
-  box-shadow:
-    0 2px 0 rgb(255 255 250 / 0.9),
-    0 3px 3px rgb(92 74 46 / 0.13),
-    inset 0 1px 1px rgb(92 74 46 / 0.09);
+  box-shadow: 0 1px 0 rgb(255 253 246 / 0.5);
 }
 body.night .paper h1, body.night .paper h2, body.night .paper h3, body.night .paper h4,
 body.night .paper .brand, body.night .paper .cardname, body.night .paper .platemark,
