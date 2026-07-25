@@ -18,9 +18,8 @@ export const about = {
   heading: 'The long answer.',
   lead: 'I understand things by building them. It is a slow way to learn and the only one that has ever stuck.',
   body: [
-    'I work as an AI engineer, building platforms that put models to use — retrieval, generation, and the infrastructure that keeps them running in production. Around that sits everything else I have shipped: backend systems and data pipelines, desktop software, embedded firmware, interactive web.',
-    'I like problems that need more than one discipline at once — a model, a database, and an interface that makes sense of both. What matters to me is work that holds up outside a demo: readable code, results I can defend, and systems the next person can maintain.',
-    'I have never thought of a stack as something you finish learning. Every project has left me with a question I could not have asked at the start, and that is mostly why I keep building. I am looking for work that keeps doing that.',
+    'I work as an AI engineer: retrieval and generation systems, the data pipelines behind them, and the infrastructure that keeps them running in production. Around that sit backend services, embedded firmware, desktop software and interactive web.',
+    'Every project leaves me a question I could not have asked at the start. That is the part I am here for.',
   ],
   // The right-hand column of page 2 — the working toolkit, not a link list
   // (contact lives on page 3 now).
