@@ -197,14 +197,14 @@ export default function App() {
     window.__openProject = (id) => setActive(id)
   }, [])
 
-  // night mode — a full colour inversion: white drawings on black paper
-  const [night, setNight] = useState(() => {
-    try { return localStorage.getItem('night') === '1' } catch { return false }
-  })
+  // Night mode — a full colour inversion: white drawings on black paper.
+  // Parked for now: the machinery and all `body.night` styles stay, but the site
+  // ships light-only. Flip NIGHT_MODE_ENABLED to bring the arch toggle back.
+  const NIGHT_MODE_ENABLED = false
+  const [night, setNight] = useState(false)
   useEffect(() => {
-    document.body.classList.toggle('night', night)
-    try { localStorage.setItem('night', night ? '1' : '0') } catch { /* ignore */ }
-  }, [night])
+    document.body.classList.toggle('night', NIGHT_MODE_ENABLED && night)
+  }, [NIGHT_MODE_ENABLED, night])
   const toggleNight = () => setNight((n) => !n)
 
   // ── page fold: the cover turns around its spine to reveal the about page ──
@@ -257,7 +257,7 @@ export default function App() {
 
   return (
     <div className="grain">
-      <DayNightArch onToggle={toggleNight} onSet={setNight} />
+      {NIGHT_MODE_ENABLED && <DayNightArch onToggle={toggleNight} onSet={setNight} />}
       <div ref={bookRef} className={`book ${folded ? 'folded' : ''}`}>
 
         {/* PAGE 2 — slides up from the bottom, OVER the cover, with a top-edge drop shadow */}
@@ -291,8 +291,8 @@ export default function App() {
             <motion.div className="mod hero" variants={riseItem}>
               <div>
                 <div className="kick">Portfolio · Selected Works</div>
-                <h1>An engineer who builds things that <em>think</em> — and things that <em>delight</em>.</h1>
-                <p className="lead">From air-gapped municipal AI to quant tools, Rust desktop apps and playful web toys. Everything here shipped, runs, or taught me something worth keeping.</p>
+                <h1>Everything here began as a <em>question</em>. Some of them <em>answered back</em>.</h1>
+                <p className="lead">Air-gapped AI platforms, quant research, Rust desktop apps and playful web toys. Everything here shipped, runs, or taught me something worth keeping.</p>
               </div>
               <div className="doodlewrap"><OwlHero /></div>
               <div className="quip">// {meta.quip}<span className="cursor" /></div>

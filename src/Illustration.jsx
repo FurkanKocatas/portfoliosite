@@ -131,20 +131,20 @@ function DairyMind() {
   )
 }
 
-/* ---------- LUMINAFT — engraved comet plate ---------- */
-// Vintage comet (public domain, tone-inverted so the bright comet becomes ink) —
-// deep-space WebGL, "engineered to illuminate".
+/* ---------- LUMINAFT — engraved constellation plate ---------- */
+// Orion from Bayer's Uranometria (1603, public domain) — bg removed, single ink.
+// Luminaft's own metaphor: scattered stars resolving into a constellation.
 function Luminaft() {
-  const { line } = PAL.luminaft
+  const { line, accent } = PAL.luminaft
   const src = `${import.meta.env.BASE_URL}plates/luminaft.webp`
   return (
     <Frame id="luminaft" line={line}>
-      <image href={src} x="12" y="150" width="376" height="150" preserveAspectRatio="xMidYMid meet" />
-      {/* stars */}
-      <g stroke={line} strokeWidth="1" opacity="0.6">
-        <path d="M96 108 l 0 12 M90 114 l 12 0" /><path d="M328 328 l 0 10 M323 333 l 10 0" /><path d="M300 120 l 0 8 M296 124 l 8 0" />
+      <image href={src} x="66" y="78" width="268" height="292" preserveAspectRatio="xMidYMid meet" />
+      {/* the belt — three stars picked out of the field */}
+      <g fill={accent}>
+        <circle cx="186" cy="232" r="3" /><circle cx="199" cy="240" r="3" /><circle cx="212" cy="248" r="3" />
       </g>
-      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.06 · SHADERS</text>
+      <text x="30" y="58" fontFamily={MONO} fontSize="9.5" letterSpacing="2" fill={line} opacity="0.7">FIG.06 · ENGINEERED TO ILLUMINATE</text>
     </Frame>
   )
 }
