@@ -16,10 +16,10 @@ export const meta = {
 export const about = {
   kicker: null,
   heading: 'The long answer.',
-  lead: 'Furkan Kocataş — computer engineer in Türkiye. I understand things by building them.',
+  lead: 'I understand things by building them. It is a slow way to learn and the only one that has ever stuck.',
   body: [
-    'The work moves around: firmware on a microcontroller, a Rust app that redraws the Windows desktop, shaders and 3D in the browser, a digital twin for dairy farms, market research that checks its own conclusions, and enterprise platforms that never touch the internet. Different problems, one instinct — take it apart, rebuild it, keep what held.',
-    "I'd rather ship something honest than something impressive. The systems I like admit their limits, hold up when no one is watching, and are pleasant to live with. Whatever taught me something, I kept; the rest was practice.",
+    'I have written firmware for a chip smaller than a coin and platforms that never touch the internet. In between: a Rust app that redraws the Windows desktop, shaders running in a browser tab, a digital twin of a dairy farm, and a research loop whose whole job is to prove my own ideas wrong. The subject changes every time. The method never does — take it apart, rebuild it, keep whatever held.',
+    'Most software is built to look finished. I would rather build things that are honest: systems that state their limits, report no signal when the data has none, and go on working when nobody is watching. That last part is unglamorous and it is most of the job.',
   ],
   // The right-hand column of page 2 — the working toolkit, not a link list
   // (contact lives on page 3 now).

@@ -309,9 +309,8 @@ function AboutPage({ onGo, onContact }) {
         </div>
 
         <div className="footstrip">
-          <span className="cta">Have something worth building? <button className="cta-link" onClick={onContact}>Write to me.</button></span>
+          <span />
           <span className="social">
-            <button className="pageflip" onClick={() => onGo(0)}>Back to the cover ⌃</button>
             <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
           </span>
         </div>
@@ -510,10 +509,8 @@ export default function App() {
 
           {/* footer */}
           <motion.div className="footstrip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}>
-            <span className="cta">Have something worth building? <button className="cta-link" onClick={goToContact}>Write to me.</button></span>
+            <span />
             <span className="social">
-              <a href={meta.github} target="_blank" rel="noreferrer">GitHub</a>
-              <a href={meta.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
               <span className="barcode">{Array.from({ length: 16 }).map((_, i) => <i key={i} />)}</span>
             </span>
           </motion.div>

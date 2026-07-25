@@ -391,7 +391,8 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 .pageflip:hover { color: var(--color-red); border-bottom-color: var(--color-red); }
 
 /* ABOUT page (page 2) */
-.about-body { display: grid; grid-template-columns: 1.6fr 1fr; gap: 46px; align-content: center; padding: 8px 6px; min-height: 0; }
+/* the heading sits at the top of the leaf rather than floating in its middle */
+.about-body { display: grid; grid-template-columns: 1.6fr 1fr; gap: 46px; align-content: start; padding: 2.2rem 6px 8px; min-height: 0; }
 .about-main .kick { font-size: 0.6875rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-red); }
 .about-h { font-family: var(--font-serif); font-weight: 600; font-size: clamp(40px, 6vw, 124px); line-height: 0.98; letter-spacing: -0.02em; margin: 0 0 18px; }
 .about-lead { font-family: var(--font-serif); font-size: clamp(18px, 2vw, 36px); font-style: italic; line-height: 1.3; margin: 0 0 20px; max-width: 32ch; }
@@ -401,7 +402,7 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
    the ink lines remain; the page-level night filter inverts it with everything else */
 .about-portrait { margin: 0 0 20px; }
 .about-portrait img {
-  display: block; width: 100%; max-width: 208px; height: auto;
+  display: block; width: 100%; max-width: 340px; height: auto;
   /* already a transparent single-ink PNG (tools/engrave.py) — no blend tricks needed */
 }
 /* the page-level night filter would turn the portrait into a photo negative
