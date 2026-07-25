@@ -26,3 +26,6 @@ dist-ssr
 # local engraving sources & scratch (not part of the shipped site)
 owl-src/
 *.zip
+
+# deploy bundle for Hostinger
+*.zip
