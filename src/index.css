@@ -401,7 +401,7 @@ button.mod, a.mod { cursor: pointer; font: inherit; text-align: left; }
 /* engraved author portrait — multiply blends its cream ground into the paper so only
    the ink lines remain; the page-level night filter inverts it with everything else */
 .about-portrait { margin: 0 0 20px; }
-.about-portrait img {
+.about-portrait img, .about-portrait svg {
   display: block; width: 100%; max-width: 340px; height: auto;
   /* already a transparent single-ink PNG (tools/engrave.py) — no blend tricks needed */
 }
@@ -596,3 +596,9 @@ body.night .dn-orb { offset-distance: 100%; }
 /* the plate's own FIG caption belongs to the detail spread — in a card it collides
    with the card's No./kind label */
 .mod .bg svg text { display: none; }
+
+/* the wax seal that lands when a message is sent */
+.sealwrap { display: inline-flex; align-items: center; gap: 12px; }
+.seal { display: block; width: 2.6rem; height: 2.6rem; color: var(--color-red); flex: none; }
+.seal svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgb(90 30 18 / 0.35)); }
+@media (prefers-reduced-motion: reduce) { .seal { animation: none; } }

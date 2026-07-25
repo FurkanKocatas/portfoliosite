@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform, animate } from '
 import { meta, projects, about, contact } from './data.js'
 import Illustration from './Illustration.jsx'
 import OwlHero from './OwlHero.jsx'
+import PortraitEyes from './PortraitEyes.jsx'
 
 const byId = Object.fromEntries(projects.map((p) => [p.id, p]))
 const swatch = { wallpapp: 'var(--color-blue)', dairymind: 'var(--color-mustard)', luminaft: 'var(--color-red)' }
@@ -162,6 +163,51 @@ function PageNav({ current, onGo }) {
   )
 }
 
+// The letter is sealed once it is sent: a wax stamp drops onto the page, settles,
+// and the confirmation reads out beside it.
+function WaxSeal() {
+  const ridges = Array.from({ length: 28 }, (_, i) => {
+    const a = (i / 28) * Math.PI * 2
+    return (
+      <line
+        key={i}
+        x1={30 + Math.cos(a) * 20} y1={30 + Math.sin(a) * 20}
+        x2={30 + Math.cos(a) * 26} y2={30 + Math.sin(a) * 26}
+        stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" opacity="0.85"
+      />
+    )
+  })
+  return (
+    <span className="sealwrap">
+      <motion.span
+        className="seal"
+        initial={{ scale: 2.4, opacity: 0, rotate: -18 }}
+        animate={{ scale: [2.4, 0.94, 1], opacity: [0, 1, 1], rotate: [-18, 4, 0] }}
+        transition={{ duration: 0.55, times: [0, 0.62, 1], ease: ['easeIn', 'easeOut'] }}
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 60 60">
+          {ridges}
+          <circle cx="30" cy="30" r="21" fill="currentColor" />
+          <circle cx="30" cy="30" r="16.5" fill="none" stroke="#f4efe3" strokeWidth="1" opacity="0.45" />
+          <text
+            x="30" y="30" textAnchor="middle" dominantBaseline="central"
+            fontFamily="'Fraunces', serif" fontWeight="700" fontSize="19" fill="#f4efe3"
+          >FK</text>
+        </svg>
+      </motion.span>
+      <motion.span
+        className="cf-note ok"
+        initial={{ opacity: 0, x: -6 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.45, duration: 0.3 }}
+      >
+        Sealed and sent — I'll be in touch.
+      </motion.span>
+    </span>
+  )
+}
+
 // The foot of page 2 — where people can actually write.
 function ContactSection({ onGo }) {
   const [state, setState] = useState('idle') // idle | sending | sent | error
@@ -234,7 +280,7 @@ function ContactSection({ onGo }) {
                 <button type="submit" disabled={state === 'sending'}>
                   {state === 'sending' ? 'Sending…' : 'Send'}
                 </button>
-                {state === 'sent' && <span className="cf-note ok">Thank you — I'll be in touch.</span>}
+                {state === 'sent' && <WaxSeal />}
                 {state === 'error' && (
                   <span className="cf-note bad">That didn't go through. Write to {meta.email} instead.</span>
                 )}
@@ -293,7 +339,10 @@ function AboutPage({ onGo, onContact }) {
           </div>
           <aside className="about-side">
             <figure className="about-portrait">
-              <img src={`${import.meta.env.BASE_URL}img/portrait.webp`} alt="Engraved portrait of Furkan Kocataş" />
+              <PortraitEyes
+                src={`${import.meta.env.BASE_URL}img/portrait.webp`}
+                alt="Engraved portrait of Furkan Kocataş"
+              />
               <figcaption>fig. — the author</figcaption>
             </figure>
             <div className="folio"><span>Page 02</span><span>Specimen</span></div>
