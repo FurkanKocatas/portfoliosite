@@ -18,8 +18,9 @@ export const about = {
   heading: 'The long answer.',
   lead: 'I understand things by building them. It is a slow way to learn and the only one that has ever stuck.',
   body: [
-    'I have written firmware for a chip smaller than a coin and platforms that never touch the internet. In between: a Rust app that redraws the Windows desktop, shaders running in a browser tab, a digital twin of a dairy farm, and a research loop whose whole job is to prove my own ideas wrong. The subject changes every time. The method never does — take it apart, rebuild it, keep whatever held.',
-    'Most software is built to look finished. I would rather build things that are honest: systems that state their limits, report no signal when the data has none, and go on working when nobody is watching. That last part is unglamorous and it is most of the job.',
+    'I work as an AI engineer, building platforms that put models to use — retrieval, generation, and the infrastructure that keeps them running in production. Around that sits everything else I have shipped: backend systems and data pipelines, desktop software, embedded firmware, interactive web.',
+    'I like problems that need more than one discipline at once — a model, a database, and an interface that makes sense of both. What matters to me is work that holds up outside a demo: readable code, results I can defend, and systems the next person can maintain.',
+    'I have never thought of a stack as something you finish learning. Every project has left me with a question I could not have asked at the start, and that is mostly why I keep building. I am looking for work that keeps doing that.',
   ],
   // The right-hand column of page 2 — the working toolkit, not a link list
   // (contact lives on page 3 now).
