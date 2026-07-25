@@ -3,7 +3,6 @@ import { motion, AnimatePresence, useMotionValue, useTransform, animate } from '
 import { meta, projects, about, contact } from './data.js'
 import Illustration from './Illustration.jsx'
 import OwlHero from './OwlHero.jsx'
-import PortraitEyes from './PortraitEyes.jsx'
 
 const byId = Object.fromEntries(projects.map((p) => [p.id, p]))
 const swatch = { wallpapp: 'var(--color-blue)', dairymind: 'var(--color-mustard)', luminaft: 'var(--color-red)' }
@@ -353,10 +352,7 @@ function AboutPage({ onGo, onContact }) {
           </div>
           <aside className="about-side">
             <figure className="about-portrait">
-              <PortraitEyes
-                src={`${import.meta.env.BASE_URL}img/portrait.webp`}
-                alt="Engraved portrait of Furkan Kocataş"
-              />
+              <img src={`${import.meta.env.BASE_URL}img/portrait.webp`} alt="Engraved portrait of Furkan Kocataş" />
               <figcaption>fig. — the author</figcaption>
             </figure>
             <div className="folio"><span>Page 02</span><span>Specimen</span></div>
